@@ -3,13 +3,13 @@ define([
 	"app/config"
 ], function( _, Config ) {
 	
-	var ios = _.extend({
+	var ios = _.extend(Config, {
 		chatanoo: {
 			anonymous_user: {
 				pass: "bou"
 			}
 		}
-	}, Config);
+	});
 	
 	return ios;
 });
