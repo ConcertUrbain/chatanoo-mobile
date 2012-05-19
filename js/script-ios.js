@@ -15,7 +15,7 @@ require.config({
     Chatanoo: 'libs/require/chatanoo',
 
 	// configs
-	Config: 'app/config'
+	Config: 'app/config-ios'
   }, 
   waitSeconds: 45
 });
@@ -23,7 +23,7 @@ require.config({
 require([
   'app/app'
 ], function(App) {
-	console.log("App loaded");
+	console.log("App ios loaded");
   	App.initialize();
 });
 

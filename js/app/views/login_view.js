@@ -5,7 +5,7 @@ define([
 	
 	'app/models/login_model',
 	
-	'app/config',
+	'Config',
 	
 	'text!app/templates/login.tmpl.html'
 ], function(Backbone, _, $,

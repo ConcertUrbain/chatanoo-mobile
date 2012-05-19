@@ -5,7 +5,7 @@ define([
   	'order!Chatanoo',
   	'order!app/router',
 
-	'order!app/config',
+	'order!Config',
 
 	'order!libs/moment',
 	'order!libs/moment.lang.fr'
