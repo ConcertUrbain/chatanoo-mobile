@@ -1,0 +1,18 @@
+<form id="item-form" action="">
+	<h2>Général</h2>
+	<textarea name="title" class="medium" placeholder="Taper votre ici le titre de votre contribution!"><% if( !_.isUndefined( item.get( 'title' ) ) ) print( item.get( 'title' ) ) %></textarea>
+	<textarea name="description" class="big" placeholder="Donnez une description ou des informations complémentaires sur votre contribution."><% if( !_.isUndefined( item.get( 'description' ) ) ) print( item.get( 'description' ) ) %></textarea>
+	
+	<% if(mode == "edit") { %>
+		<h2>Médias</h2>
+		<ul class="medias rounded-tableview">
+			<li><input type="button" name="add-media" value="+ Ajouter un média" /></li>
+		</ul>	
+	<% } %>
+	
+	<% if(mode == "new") { %>
+		<input type="submit" name="submit" value="Ajouter ma contribution" />
+	<% } else { %>
+		<input type="submit" name="submit" value="Modifier ma contribution" />
+	<% } %>
+</form>

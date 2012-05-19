@@ -1,0 +1,11 @@
+<% if( !_.isNull( user ) && user.role == 'admin' ) { %>
+<div class="contribute">
+	<input type="button" name="add-query" value="+ Poser ma question" />
+</div>
+<% } %>
+
+<ul class="tableview">
+	<% session.queries.each( function(query) { %>
+	<li><a href="#/queries/<%- query.get( 'id' ) %>"><%- query.get( 'content' ) %></a></li>
+	<% }) %>
+</ul>

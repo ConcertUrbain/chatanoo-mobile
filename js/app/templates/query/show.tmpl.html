@@ -1,0 +1,31 @@
+<% if( !_.isNull( user ) && (user.role == 'admin' || ( !_.isNull( query.user ) && user.id == query.user.id) ) ) { %>
+<div class="admin">
+	<h3>Administration</h3>
+	<% if( query.get( '_isValid' ) != 0 ) { %>
+		<input type="button" name="unvalidate" value="Invalider ma question" />
+	<% } else { %>	
+		<input type="button" name="validate" value="Valider ma question" />
+	<% } %>
+	<input type="button" name="edit" value="Modifier ma question" />
+	<input type="button" name="delete" value="Supprimer ma question" />
+</div>
+<% } %>
+
+<% if ( !_.isNull( query.get("description") ) && !_.isUndefined( query.get("description") )  && query.get("description") != "" ) { %>
+<p><%- query.get("description") %></p>
+<% } %>
+<% if ( !_.isNull( query.user ) ) { %>
+<p class="author">Par <%- query.user.pseudo %><% if( !_.isNull( query.get('addDate') ) ) { %>, <%- query.get('addDate').fromNow() %><% } %></p>
+<% } %>
+
+<% if( !_.isNull( user ) && (user.role == 'user' || user.role == 'admin') ) { %>
+<div class="contribute">
+	<input type="button" name="add-item" value="+ Ajouter ma contribution" />
+</div>
+<% } %>
+
+<ul class="tableview">
+	<% query.items.forEach( function(item) { %>
+	<li><a href="#/queries/<%- query.get('id') %>/items/<%- item.get('id') %>"><%- item.get('title') %></a></li>
+	<% }) %>
+</ul>
