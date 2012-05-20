@@ -229,7 +229,7 @@
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
 					Chatanoo.trigger('finish');
-					log('Error: ' + jqXHR + ' (message: ' + textStatus + ' error: ' + errorThrown + ' url: ' + mThis.url + ' data: ' + JSON.stringify(d)) + ')');
+					log('Error: ' + jqXHR + ' (message: ' + textStatus + ' error: ' + errorThrown + ' url: ' + mThis.url + ' data: ' + JSON.stringify(d) + ')');
 					mThis.trigger('error ' + method + ':error ' + method + ':error:' + d.id);
 				}
 			};
