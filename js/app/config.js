@@ -7,6 +7,12 @@ define([], function() {
 				login: "anonymous",
 				pass: "anonymous"
 			}
-		}
+		},
+		mediasCenter: {
+			url: "http://ms.dring93.org/",
+			uploadURL: "http://ms.dring93.org/upload"
+		},
+		isCordova: false,
+		platform: "web"
 	}
 });

@@ -4,11 +4,8 @@ define([
 ], function( _, Config ) {
 	
 	var ios = _.extend(Config, {
-		chatanoo: {
-			anonymous_user: {
-				pass: "bou"
-			}
-		}
+		isCordova: true,
+		platform: "ios"
 	});
 	
 	return ios;

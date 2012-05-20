@@ -26,6 +26,7 @@ define([
 			console.log("init");
 			this.$el.html(_.template(template, this.model));
 			this.header = new HeaderView( { el: $('header'), model: new Header() } );
+			this.header.on('logout', this.logout, this);
 			
 			this.overlay = new OverlayView( { el: $('#overlay') } );
 			this.overlay.hide('loading');
@@ -64,6 +65,10 @@ define([
 			return this;
 		},
 		
+		logout: function() {
+			location.hash = '/login';
+		},
+		
 		_gotoView: function(view, options, callback) {
 			if( !_.isNull(this.content) && _.isFunction(this.content.kill))
 				this.content.kill();
@@ -82,7 +87,9 @@ define([
 			this._gotoView( 'app/views/login_view', {}, function ( login_view ) {
 				this.header.model.set({
 					"title": null,
-					"section": null
+					"section": null,
+					"back": false,
+					"close": false
 				});
 			} );
 		},
@@ -91,7 +98,9 @@ define([
 			this._gotoView( 'app/views/session_view', {}, function ( session_view ) {
 				this.header.model.set({
 					"title": "Questions",
-					"section": "session"
+					"section": "session",
+					"back": false,
+					"close": false
 				});
 				
 				session_view.model.loadQueries();
@@ -103,7 +112,9 @@ define([
 			this._gotoView( 'app/views/query/show', {}, function ( query_view ) {
 				this.header.model.set({
 					"title": "Chargement...",
-					"section": "query"
+					"section": "query",
+					"back": "#/session",
+					"close": false
 				});
 				
 				query_view.model.set("id", id);
@@ -116,7 +127,9 @@ define([
 			this._gotoView( 'app/views/query/new', {}, function ( query_view ) {
 				this.header.model.set({
 					"title": "Poser ma question",
-					"section": "query"
+					"section": "query",
+					"back": false,
+					"close": "#/session"
 				});
 				
 				query_view.mode = "new";
@@ -128,7 +141,9 @@ define([
 			this._gotoView( 'app/views/query/new', {}, function ( query_view ) {
 				this.header.model.set({
 					"title": "Editer ma question",
-					"section": "query"
+					"section": "query",
+					"back": false,
+					"close": "#/queries/" + id
 				});
 				
 				query_view.mode = "edit";
@@ -142,7 +157,9 @@ define([
 			this._gotoView( 'app/views/item/show', {}, function ( item_view ) {
 				this.header.model.set({
 					"title": "Chargement...",
-					"section": "item"
+					"section": "item",
+					"back": "#/queries/" + query_id,
+					"close": false
 				});
 				
 				item_view.model.set("id", item_id);
@@ -155,7 +172,9 @@ define([
 			this._gotoView( 'app/views/item/new', {}, function ( item_view ) {
 				this.header.model.set({
 					"title": "Contribuer",
-					"section": "item"
+					"section": "item",
+					"back": false,
+					"close": "#/queries/" + query_id
 				});
 				
 				item_view.mode = "new";
@@ -168,7 +187,9 @@ define([
 			this._gotoView( 'app/views/item/new', {}, function ( item_view ) {
 				this.header.model.set({
 					"title": "Modifier ma contribution",
-					"section": "item"
+					"section": "item",
+					"back": false,
+					"close": "#/queries/" + query_id + "/items/" + item_id
 				});
 				
 				item_view.mode = "edit";

@@ -4,11 +4,14 @@ define([
 	'jQuery',
 	'Chatanoo',
 	
+	'Config',
+	
 	'text!app/templates/medias/show-edit.tmpl.html',
 	'text!app/templates/medias/edit.tmpl.html',
 	
 	'app/views/app_view'
 ], function(Backbone, _, $, Chatanoo,
+	Config,
 	template, editTemplate,
 	app_view) {
 	
@@ -26,6 +29,7 @@ define([
 			"click .admin > input[name=edit]": "editMedia",
 			"click .admin > input[name=delete]": "deleteMedia",
 			//edit
+			"click input[name=file]": "chooseFile",
 			"click .edit > input[name=edit]": "validateEditMedia",
 			"click .edit > input[name=cancel]": "cancelEditMedia"
 		},
@@ -49,10 +53,10 @@ define([
 			this.$el.removeClass();
 			this.$el.addClass('video');
 							
-			this.$el.html(_.template( (this.editing || _.isUndefined( this.model.get('id') )) ? editTemplate : template, { media: this.model, user: app_view.user }));
+			this.$el.html(_.template( (this.editing || _.isUndefined( this.model.get('id') )) ? editTemplate : template, { media: this.model, user: app_view.user, config: Config }));
 			this.$el.find('textarea').elastic();
 			
-			if( this.editing || _.isUndefined( this.model.get('id') ) ) {
+			if( (this.editing || _.isUndefined( this.model.get('id') )) && !Config.isCordova ) {
 				var mThis = this;
 				this.$el.find("#upload-frame").load( function( event ) {
 					mThis.uploadFile.apply(mThis, [event]);
@@ -60,6 +64,78 @@ define([
 			}
 			
 			return this;
+		},
+		
+		chooseFile: function() {
+			var mThis = this;
+			var actionSheet = window.plugins.actionSheet;
+			actionSheet.create('Choisir...', ['Vidéo', 'Photo', 'Audio', 'Annuler'], function(buttonValue, buttonIndex) {
+			    console.warn('create(), arguments=' + Array.prototype.slice.call(arguments).join(', '));
+				mThis.mediaDisptach( buttonValue );
+			}, {cancelButtonIndex: 3});
+		},
+		
+		mediaDisptach: function(type) {
+			var mThis = this;
+			
+			// capture callback
+			var captureSuccess = function(mediaFiles) {
+			    var i, path, len;
+			    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+			        path = mediaFiles[i].fullPath;
+			        console.warn('captureSuccess(), path: ' + path);
+			
+					mThis.uploadCordovaFile(mediaFiles[i]);
+			    }
+			};
+
+			// capture error callback
+			var captureError = function(error) {
+			    navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+			};
+			
+			switch(type) {
+				case "Vidéo":
+					// start video capture
+					navigator.device.capture.captureVideo(captureSuccess, captureError, {limit:1});
+					break;
+				case "Photo":
+					// start image capture
+					navigator.device.capture.captureImage(captureSuccess, captureError, {limit:1});
+					break;
+				case "Audio":
+					navigator.device.capture.captureAudio(captureSuccess, captureError, {limit:2});
+					break;
+			}
+		},
+		
+		uploadCordovaFile: function( file ) {
+			var ft = new FileTransfer(),
+			    path = mediaFile.fullPath,
+			    name = mediaFile.name;
+			
+			var win = function(r) {
+			    console.log("Code = " + r.responseCode);
+			    console.log("Response = " + r.response);
+			    console.log("Sent = " + r.bytesSent);
+			}
+            
+			var fail = function(error) {
+			    alert("An error has occurred: Code = " + error.code);
+			    console.log("upload error source " + error.source);
+			    console.log("upload error target " + error.target);
+			}
+            
+		   	var options = new FileUploadOptions();
+		   	options.fileKey = "file";
+			switch(mediaFile.type) {
+				case "captureVideo": options.fileName = name + ".mp4"; break;
+				case "captureImage": options.fileName = name + ".jpg"; break;
+				case "captureAudio": options.fileName = name + ".aac"; break;
+			}
+		   	options.fileName = name;
+
+			ft.upload(path, Config.mediasCenter.uploadURL, win, fail, options);
 		},
 		
 		uploadFile: function( event ) {

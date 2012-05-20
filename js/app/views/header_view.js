@@ -3,8 +3,11 @@ define([
 	'Underscore',
 	'jQuery',
 	
+	'Config',
+	
 	'text!app/templates/header.tmpl.html'
 ], function(Backbone, _, $,
+	Config,
 	template) {
 	
 	var HeaderView = Backbone.View.extend(
@@ -12,6 +15,10 @@ define([
 		el: $("header"),
 		
 		model: null,
+		
+		events: {
+			'click input[name=logout]': 'logout'
+		},
 		
 		initialize: function() 
 	    {
@@ -23,9 +30,14 @@ define([
 			this.$el.removeClass();
 			if(this.model.get("section"))
 				this.$el.addClass(this.model.get("section"));
-			this.$el.html( _.template( template, this.model ? this.model.toJSON() : {} ) );
+			this.$el.html( _.template( template, { model: this.model ? this.model.toJSON() : {}, config: Config } ) );
 			
 			return this;
+		},
+		
+		logout: function() {
+			bou();
+			this.trigger('logout');
 		},
 
 		kill: function() {

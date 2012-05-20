@@ -20,6 +20,18 @@
 		font-size: 0.7em;
 	}
 	
+	header {
+		.left {
+			top: 5px;
+			left: 5px;
+		}
+
+		.right {
+			top: 5px;
+			right: 5px;
+		}
+	}
+	
 	ul.tableview {
 		li {
 			a {
@@ -44,6 +56,18 @@
 @media only screen and (min-width: 481px) {
 	body {
 		font-size: 1em;
+	}
+	
+	header {
+		.left {
+			top: 15px;
+			left: 15px;
+		}
+
+		.right {
+			top: 15px;
+			right: 15px;
+		}
 	}
 
 	ul.tableview {
@@ -127,6 +151,8 @@ header {
 	color: #ffffff;
 	margin: 0;
 	padding-top: 2px;
+	
+	min-height: 65px;
 		
 	.section(@color1, @color2) {
 		background-color: @color1;
@@ -136,17 +162,91 @@ header {
 			text-shadow: 0px 1px 0px @color2;
 		}
 	}
+	
+	.left, .right {
+		width: 58px;
+		height: 58px;
+		#hl.rounded-corners(10px, 10px, 10px, 10px);
+		
+		position: absolute;
+		text-indent: -3000px;
+		
+		a, input {
+			display: block;
+			width: 58px;
+			height: 58px;
+			
+			border: 0;
+			margin: 0;
+			padding: 0;
+			
+			background: url(../img/nav-sprite.png) 0 0 no-repeat;
+			
+			&:hover {
+				border: 0;
+				margin: 0;
+				padding: 0;
+			}
+			
+			&.close {
+				background-position: -64px 0;
+			}
+			
+			&.back {
+				background-position: -128px 0;
+			}
+			
+			&.logout {
+				background-position: 0 0;
+			}
+		}
+		
+		input, input:hover {
+			color: transparent;
+			text-shadow: none;
+		}
+	}
+	
+	.center {
+		clear: both;
+		margin-left: auto;
+		margin-right: auto;
+		
+		width: 60%;
+		
+		h1 {
+			text-align: center;
+		}
+	}
 		
 	&.session {
 		.section(#C0272D, #8F272C);
+		.left, .right {
+			background-color: #8F272C;
+			&:hover, input:hover {
+				background-color: #C0272D;
+			}
+		}
 	}
 	
 	&.query {
 		.section(#F3CC1A, #D8B61C);
+		.left, .right {
+			background-color: #D8B61C;
+			&:hover, input:hover {
+				background-color: #F3CC1A;
+			}
+		}
 	}
 	
 	&.item {
 		.section(#009DE0, #007FB5);
+		.left, .right {
+			background-color: #007FB5;
+			&:hover, input:hover {
+				background-color: #009DE0;
+			}
+		}
 	}
 }
 
@@ -477,7 +577,7 @@ ul.medias {
 				margin: 0;
 				width: 80%; // <-------------------------------
 				
-				& > input[type=file] {
+				& > input[name=file] {
 					position: absolute;
 					right: 0px;
 					top: 0px;

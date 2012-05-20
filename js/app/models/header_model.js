@@ -9,7 +9,9 @@ define([
 	    {
 	      return {
 	        title: "Title",
-		    session: null
+		    session: null,
+			back: false,
+			close: false
 	      };
 	    },
 	
@@ -18,6 +20,8 @@ define([
 	      if (!this.get("title")) {
 	        this.set({"title": this.defaults.title});
 		    this.set({"session": this.defaults.session});
+		    this.set({"back": this.defaults.back});
+			this.set({"close": this.defaults.close});
 	      }
 	    }
 	});
