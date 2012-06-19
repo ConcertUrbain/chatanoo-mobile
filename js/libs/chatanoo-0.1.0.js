@@ -215,13 +215,13 @@
 				url: this.url,
 				type: "POST",
 				data: JSON.stringify(d),
+				cache : false,
 				dataType: "json",
 				beforeSend: function (xhr) { 
 					xhr.setRequestHeader("Authorization", Chatanoo.sessionKey); 
 				},
 				success: function(response) {
 					Chatanoo.trigger('finish');
-					console.log('Response: ' + JSON.stringify(response));
 					mThis.trigger('finish ' + method + ':finish ' + method + ':finish:' + d.id);
 					if( response.result !== false && !_.isNull(response.result) && !_.isUndefined(response.result) )
 						mThis.trigger(method + ' ' + method + ':success ' + method + ':success:' + d.id, mThis.jsonToValueObject(response.result));
@@ -230,7 +230,7 @@
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
 					Chatanoo.trigger('finish');
-					console.log('Error: ' + jqXHR + ' (message: ' + textStatus + ' error: ' + errorThrown + ' url: ' + mThis.url + ' data: ' + JSON.stringify(d) + ')');
+					console.log('Error: ' + jqXHR + ' (message: ' + textStatus + ' statusCode: ' + jqXHR.status + ' error: ' + errorThrown + ' session: ' + Chatanoo.sessionKey + ' url: ' + mThis.url + ' data: ' + JSON.stringify(d) + ')');
 					mThis.trigger('error ' + method + ':error ' + method + ':error:' + d.id);
 				}
 			};
