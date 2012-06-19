@@ -69,10 +69,33 @@ define([
 		chooseFile: function() {
 			var mThis = this;
 			var actionSheet = window.plugins.actionSheet;
-			actionSheet.create('Choisir...', ['Vidéo', 'Photo', 'Audio', 'Annuler'], function(buttonValue, buttonIndex) {
+			actionSheet.create('Choisir...', ['Album', 'Vidéo', 'Photo', 'Audio', 'Annuler'], function(buttonValue, buttonIndex) {
 			    console.warn('create(), arguments=' + Array.prototype.slice.call(arguments).join(', '));
-				mThis.mediaDisptach( buttonValue );
-			}, {cancelButtonIndex: 3});
+				
+				if( buttonValue == 'Album') {
+					var win = function(imageURI) {
+						console.log('Camera: ' + imageURI);
+						var m = new MediaFile();
+						m.name = imageURI.substring(imageURI.lastIndexOf('/')+1);;
+						m.fullPath = imageURI;
+						mThis.uploadCordovaFile(m);
+					}
+                	
+					var fail = function(message) {
+					    alert('Failed because: ' + message);
+						app_view.overlay.hide('loading');
+					}
+					
+					navigator.camera.getPicture(win, fail, { 
+						quality: 75,
+						destinationType: Camera.DestinationType.FILE_URI,
+						sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+					});
+					app_view.overlay.show('loading');
+				} else {
+					mThis.mediaDisptach( buttonValue );
+				}
+			}, {cancelButtonIndex: 4});
 		},
 		
 		mediaDisptach: function(type) {
@@ -92,24 +115,29 @@ define([
 			// capture error callback
 			var captureError = function(error) {
 			    navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+				app_view.overlay.hide('loading');
 			};
 			
 			switch(type) {
 				case "Vidéo":
 					// start video capture
 					navigator.device.capture.captureVideo(captureSuccess, captureError, {limit:1});
+					app_view.overlay.show('loading');
 					break;
 				case "Photo":
 					// start image capture
 					navigator.device.capture.captureImage(captureSuccess, captureError, {limit:1});
+					app_view.overlay.show('loading');
 					break;
 				case "Audio":
 					navigator.device.capture.captureAudio(captureSuccess, captureError, {limit:2});
+					app_view.overlay.show('loading');
 					break;
 			}
 		},
 		
-		uploadCordovaFile: function( file ) {
+		uploadCordovaFile: function( mediaFile ) {
+			var mThis = this;
 			var ft = new FileTransfer(),
 			    path = mediaFile.fullPath,
 			    name = mediaFile.name;
@@ -118,6 +146,8 @@ define([
 			    console.log("Code = " + r.responseCode);
 			    console.log("Response = " + r.response);
 			    console.log("Sent = " + r.bytesSent);
+			
+				mThis.setMediaUrl( r.response );
 			}
             
 			var fail = function(error) {
@@ -128,12 +158,8 @@ define([
             
 		   	var options = new FileUploadOptions();
 		   	options.fileKey = "file";
-			switch(mediaFile.type) {
-				case "captureVideo": options.fileName = name + ".mp4"; break;
-				case "captureImage": options.fileName = name + ".jpg"; break;
-				case "captureAudio": options.fileName = name + ".aac"; break;
-			}
 		   	options.fileName = name;
+			options.mimeType= 'application/octet-stream';
 
 			ft.upload(path, Config.mediasCenter.uploadURL, win, fail, options);
 		},
@@ -149,44 +175,48 @@ define([
 					app_view.overlay.show('loading');
 				});
 			} else {
-				var reg = new RegExp("^(MC-[a-zA-Z]+-[PVA])$","g");
 				var url = $('body', frame).text().trim();
-				if( reg.test( url ) )
+				this.setMediaUrl( url );
+			}
+		},
+		
+		setMediaUrl: function(  url ) {
+			var reg = new RegExp("^(MC-[a-zA-Z]+-[PVA])$","g");
+			if( reg.test( url ) )
+			{
+				var videoReg = new RegExp("^(MC-[a-zA-Z]+-V)$","g");
+				var pictureReg = new RegExp("^(MC-[a-zA-Z]+-P)$","g");
+				var audioReg = new RegExp("^(MC-[a-zA-Z]+-A)$","g");
+				
+				var type = null;
+				switch( true )
 				{
-					var videoReg = new RegExp("^(MC-[a-zA-Z]+-V)$","g");
-					var pictureReg = new RegExp("^(MC-[a-zA-Z]+-P)$","g");
-					var audioReg = new RegExp("^(MC-[a-zA-Z]+-A)$","g");
+					case videoReg.test( url ): 		type = "Vo_Media_Video"; 	break;
+					case pictureReg.test( url ): 	type = "Vo_Media_Picture"; 	break;
+					case audioReg.test( url ): 		type = "Vo_Media_Sound"; 	break;
+				}
+				
+				if( !_.isUndefined( this.model.get('id') ) && this.model.get('__className') != type )
+					app_view.overlay.show('error', 3000);
+				else {
+					this.model.type = type;
+					this.$el.find('input[name=url]').val( url );
 					
-					var type = null;
-					switch( true )
+					switch( type )
 					{
-						case videoReg.test( url ): 		type = "Vo_Media_Video"; 	break;
-						case pictureReg.test( url ): 	type = "Vo_Media_Picture"; 	break;
-						case audioReg.test( url ): 		type = "Vo_Media_Sound"; 	break;
-					}
-					
-					if( !_.isUndefined( this.model.get('id') ) && this.model.get('__className') != type )
-						app_view.overlay.show('error', 3000);
-					else {
-						this.model.type = type;
-						this.$el.find('input[name=url]').val( url );
-						
-						switch( type )
-						{
-							case "Vo_Media_Video": 		
-								this.$el.find('.left img').attr('src', 'http://ms.dring93.org/m/preview/160x120/' + url + '.jpg');	
-								break;
-							case "Vo_Media_Picture": 	
-								this.$el.find('.left img').attr('src', 'http://ms.dring93.org/m/160x120/' + url + '.jpg');
-								break;
-						}
+						case "Vo_Media_Video": 		
+							this.$el.find('.left img').attr('src', 'http://ms.dring93.org/m/preview/160x120/' + url + '.jpg');	
+							break;
+						case "Vo_Media_Picture": 	
+							this.$el.find('.left img').attr('src', 'http://ms.dring93.org/m/160x120/' + url + '.jpg');
+							break;
 					}
 				}
-				else	
-					app_view.overlay.show('error', 3000);
-				this.$el.find("#upload-frame").attr('src', '/upload/upload-iframe.html');
-				app_view.overlay.hide('loading');
 			}
+			else	
+				app_view.overlay.show('error', 3000);
+			this.$el.find("#upload-frame").attr('src', '/upload/upload-iframe.html');
+			app_view.overlay.hide('loading');
 		},
 		
 		//admin

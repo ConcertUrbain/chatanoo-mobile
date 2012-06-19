@@ -21,7 +21,7 @@
 			<div class="media picture" style="width: <%- 100 / item.medias.length %>%">
 				<img src="<%- picture_url %>" alt="<%- media.get('title') %>" />
 			</div>
-		<% } else if (media.get("__className") == "Vo_Media_Video") {%>
+		<% } else if (media.get("__className") == "Vo_Media_Video") { %>
 			<% if (reg.test(media.get('url'))) { %>
 			<div class="media video" style="width: <%- 100 / item.medias.length %>%">
 				<video width="100%" controls="controls">
@@ -45,6 +45,15 @@
 				</video>
 			</div>
 			<% } %>
+		<% } else if(media.get("__className") == "Vo_Media_Sound") { %>
+			<div class="media audio" style="width: <%- 100 / item.medias.length %>%">
+				<audio width="100%" controls="controls">
+					<source src="http://ms.dring93.org/m/<%- media.get('url') %>.ogg" type="audio/ogg" />
+					<source src="http://ms.dring93.org/m/<%- media.get('url') %>.aac" type="audio/aac" />
+					<source src="http://ms.dring93.org/m/<%- media.get('url') %>.mp3" type="audio/mp3" />
+					Your browser does not support the audio tag.
+				</audio>
+			</div>
 		<% } %>
 	<% }) %>	
 	</div>
