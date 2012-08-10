@@ -17,7 +17,7 @@
 	<% _.each( item.medias.toArray(), function(media) { %>
 		<% var reg = new RegExp("^(MC-[a-zA-Z]+-[PVMS])$","g"); %>
 		<% if(media.get("__className") == "Vo_Media_Picture") { %>
-			<% var picture_url = reg.test(media.get('url')) ? "http://ms.dring93.org/m/640x640/inner/" + media.get('url') + ".jpg" : media.get('url'); %>
+			<% var picture_url = reg.test(media.get('url')) ? "<%- config.mediasCenter.url %>m/640x640/inner/" + media.get('url') + ".jpg" : media.get('url'); %>
 			<div class="media picture" style="width: <%- 100 / item.medias.length %>%">
 				<img src="<%- picture_url %>" alt="<%- media.get('title') %>" />
 			</div>
@@ -26,11 +26,11 @@
 			<div class="media video" style="width: <%- 100 / item.medias.length %>%">
 				<video width="100%" controls="controls">
 					<!-- VIDEO FORMATS -->
-				  	<source src="http://ms.dring93.org/m/480x320/<%- media.get('url') %>.webm" type="video/x-webm" />
-				  	<source src="http://ms.dring93.org/m/480x320/<%- media.get('url') %>.ogv" type="video/ogg" />
-				  	<source src="http://ms.dring93.org/m/480x320/<%- media.get('url') %>.mp4" type="video/mp4" />
-				  	<source src="http://ms.dring93.org/m/480x320/<%- media.get('url') %>.mov" type="video/quicktime" />
-				  	<source src="http://ms.dring93.org/m/480x320/<%- media.get('url') %>.avi" type="video/x-sgi-movie" />
+				  	<source src="<%- config.mediasCenter.url %>m/480x320/<%- media.get('url') %>.webm" type="video/x-webm" />
+				  	<source src="<%- config.mediasCenter.url %>m/480x320/<%- media.get('url') %>.ogv" type="video/ogg" />
+				  	<source src="<%- config.mediasCenter.url %>m/480x320/<%- media.get('url') %>.mp4" type="video/mp4" />
+				  	<source src="<%- config.mediasCenter.url %>m/480x320/<%- media.get('url') %>.mov" type="video/quicktime" />
+				  	<source src="<%- config.mediasCenter.url %>m/480x320/<%- media.get('url') %>.avi" type="video/x-sgi-movie" />
 
 					<!-- FLASH ALTERNATIVE
 					<object type="application/x-shockwave-flash" data="player.swf" width="480" height="320">
@@ -38,7 +38,7 @@
 					    <param name="FlashVars" value="flv=http://ms.dring93.org/m/480x320/MC-SEWnjWaI-V.flv" /> -->
                 
 						<!-- PICTURE ALTERNATIVE  -->
-						<img src="http://ms.dring93.org/m/preview/480x320/<%- media.get('url') %>.jpg"/>
+						<img src="<%- config.mediasCenter.url %>m/preview/480x320/<%- media.get('url') %>.jpg"/>
                 
 					<!-- </object> -->
                 
@@ -48,9 +48,9 @@
 		<% } else if(media.get("__className") == "Vo_Media_Sound") { %>
 			<div class="media audio" style="width: <%- 100 / item.medias.length %>%">
 				<audio width="100%" controls="controls">
-					<source src="http://ms.dring93.org/m/<%- media.get('url') %>.ogg" type="audio/ogg" />
-					<source src="http://ms.dring93.org/m/<%- media.get('url') %>.aac" type="audio/aac" />
-					<source src="http://ms.dring93.org/m/<%- media.get('url') %>.mp3" type="audio/mp3" />
+					<source src="<%- config.mediasCenter.url %>m/<%- media.get('url') %>.ogg" type="audio/ogg" />
+					<source src="<%- config.mediasCenter.url %>m/<%- media.get('url') %>.aac" type="audio/aac" />
+					<source src="<%- config.mediasCenter.url %>m/<%- media.get('url') %>.mp3" type="audio/mp3" />
 					Your browser does not support the audio tag.
 				</audio>
 			</div>

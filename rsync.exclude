@@ -2,4 +2,6 @@
 /build
 /crea
 /test
+/js/app/config*
 rsync.exclude
+rsync.sh

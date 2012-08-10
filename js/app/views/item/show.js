@@ -4,6 +4,8 @@ define([
 	'jQuery',
 	'Chatanoo',
 	
+	'Config',
+	
 	'app/models/item_model',
 	
 	'app/views/comment/show',
@@ -13,6 +15,7 @@ define([
 	
 	'app/views/app_view'
 ], function(Backbone, _, $, Chatanoo,
+	Config,
 	Item,
 	CommentView,
 	template, error,
@@ -70,7 +73,7 @@ define([
 				return this;
 			}
 			
-			this.$el.html(_.template(template, { item: this.model, user: app_view.user }));
+			this.$el.html(_.template(template, { item: this.model, user: app_view.user, config: Config }));
 			
 			var els = [];
 			var ordered = this.model.comments.sortBy( function(comment) { return comment.get("addDate").valueOf(); } );

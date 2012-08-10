@@ -1,8 +1,8 @@
 <div class="left">
 	<% if( media.get( '__className' ) == "Vo_Media_Video" ) { %>
-		<img src="http://ms.dring93.org/m/preview/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
+		<img src="<%- config.mediasCenter.url %>m/preview/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
 	<% } else if( media.get( '__className' ) == "Vo_Media_Picture" ) { %>
-		<img src="http://ms.dring93.org/m/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
+		<img src="<%- config.mediasCenter.url %>m/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
 	<% } else if( media.get( '__className' ) == "Vo_Media_Audio" ) { %>
 		<img src="img/preview-audio.jpg" alt="" />
 	<% } %>
