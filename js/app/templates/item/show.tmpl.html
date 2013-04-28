@@ -17,7 +17,7 @@
 	<% _.each( item.medias.toArray(), function(media) { %>
 		<% var reg = new RegExp("^(MC-[a-zA-Z]+-[PVMS])$","g"); %>
 		<% if(media.get("__className") == "Vo_Media_Picture") { %>
-			<% var picture_url = reg.test(media.get('url')) ? "<%- config.mediasCenter.url %>m/640x640/inner/" + media.get('url') + ".jpg" : media.get('url'); %>
+			<% var picture_url = reg.test(media.get('url')) ? config.mediasCenter.url + "m/640x640/inner/" + media.get('url') + ".jpg" : media.get('url'); %>
 			<div class="media picture" style="width: <%- 100 / item.medias.length %>%">
 				<img src="<%- picture_url %>" alt="<%- media.get('title') %>" />
 			</div>
