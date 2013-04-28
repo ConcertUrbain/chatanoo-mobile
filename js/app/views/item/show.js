@@ -78,8 +78,10 @@ define([
 			var els = [];
 			var ordered = this.model.comments.sortBy( function(comment) { return comment.get("addDate").valueOf(); } );
 			_(ordered).each( function (comment) {
-				var cv = new CommentView( { model: comment } );
-				els.push( cv.render().el );
+				if ( comment.get( '_isValid' ) || (!_.isNull( app_view.user ) && app_view.user.role == 'admin') ) {
+					var cv = new CommentView( { model: comment } );
+					els.push( cv.render().el );
+				}
 			});		
 			this.$el.find(".comments").append( els );
 			
