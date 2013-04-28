@@ -26,6 +26,8 @@
 
 <ul class="tableview">
 	<% query.items.forEach( function(item) { %>
-	<li><a href="#/queries/<%- query.get('id') %>/items/<%- item.get('id') %>"><%- item.get('title') %></a></li>
+		<% if( item.get( '_isValid' ) || (!_.isNull( user ) && user.role == 'admin') ) { %>
+		<li><a href="#/queries/<%- query.get('id') %>/items/<%- item.get('id') %>"><%- item.get('title') %></a></li>
+		<% } %>
 	<% }) %>
 </ul>

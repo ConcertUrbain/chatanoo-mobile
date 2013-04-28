@@ -6,6 +6,8 @@
 
 <ul class="tableview">
 	<% session.queries.each( function(query) { %>
-	<li><a href="#/queries/<%- query.get( 'id' ) %>"><%- query.get( 'content' ) %></a></li>
+		<% if( query.get( '_isValid' ) || (!_.isNull( user ) && user.role == 'admin') ) { %>
+		<li><a href="#/queries/<%- query.get( 'id' ) %>"><%- query.get( 'content' ) %></a></li>
+		<% } %>
 	<% }) %>
 </ul>
