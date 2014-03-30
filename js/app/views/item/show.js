@@ -63,8 +63,13 @@ define([
 		render: function() {
 			this.$el.removeClass().addClass('item-view');
 			
-			if( this.model.get('title') )
-				app_view.header.model.set( "title", this.model.get('title') );
+			if( this.model.get('title') ) {
+				if( this.model.query ) {
+					app_view.header.model.set( "title", this.model.query.get('content') + " <br /> " + this.model.get('title') );
+				} else {
+					app_view.header.model.set( "title", this.model.get('title') );
+				}
+			}
 			
 			if( this.model.isOnError )
 			{
