@@ -1,4 +1,7 @@
 .svn
+.git
+.gitignore
+.gitattributes
 /build
 /crea
 /test
