@@ -87,6 +87,15 @@ define([
 			
 			this.$el.find('textarea').elastic();
 			
+			els = [];
+			this.model.metas.each( function (meta) {
+				console.log('bou', meta);
+				$meta = $('<li />', {});
+				$meta.html( "<b>" + meta.get('name') + ":</b> " + meta.get('content') );
+				els.push( $meta[0] );
+			});		
+			this.$el.find(".metas").append( els );
+			
 			return this;
 		},
 		

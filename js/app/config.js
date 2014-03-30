@@ -1,8 +1,10 @@
 define([], function() {
 	return {
 		chatanoo: {
-			url: 'http://chatanoo-ws.dev/services',
-			api_key: 'D93_qJlCaSsBbYBYypwF9TT8KmCOxhuZ',
+			// url: 'http://preprod.ws.dring93.org/services',
+			// api_key: 'MJC94_5f86d751cf83daecf09c4493e8',
+			url: 'http://ws.chatanoo.org/services',
+			api_key: 'a24j2sW2ueaadyy9462EQF3dc3BUZUje',
 			anonymous_user: {
 				login: "anonymous",
 				pass: "anonymous"

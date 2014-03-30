@@ -4,9 +4,10 @@ define([
 	'Chatanoo',
 	
 	'app/collections/medias',
-	'app/collections/comments'
+	'app/collections/comments',
+	'app/collections/metas'
 ], function(Backbone, _, Chatanoo, 
-	Medias, Comments) {
+	Medias, Comments, Metas) {
 	
 	var Item = Backbone.Model.extend(
 	{
@@ -33,6 +34,8 @@ define([
 				this.loadUser();		
 				this.loadComments();
 				this.loadMedias();
+				this.loadQuery();
+				this.loadMetas();
 				mThis.trigger("change");
 			}, mThis);
 			Chatanoo.items.on( r.error, function() {
@@ -80,6 +83,30 @@ define([
 					_(type).each( function(media) { mThis.medias.push(media); } ); 
 					mThis.trigger("change change:medias");
 				}, this );
+			}, mThis);
+		},
+		
+		query: null,
+		loadQuery: function() {			
+			var mThis = this;
+			var r = Chatanoo.queries.getQueriesByItemId( this.get("id") );
+			Chatanoo.queries.on( r.success, function(queries) {
+				require(['app/models/query_model'], function(Query){
+					mThis.query = new Query( _(queries).first() ); 
+					mThis.trigger("change change:query");
+				});
+			}, mThis);
+		},
+		
+		metas: new Metas(),
+		loadMetas: function() {
+			this.metas.remove(this.metas.toArray());
+			
+			var mThis = this;
+			var r = Chatanoo.search.getMetasByVo( this.get("id"), 'Item' );
+			Chatanoo.search.on( r.success, function(metas) {
+				_(metas).each( function(meta) { mThis.metas.push(meta); } );
+				mThis.trigger("change change:metas");
 			}, mThis);
 		},
 		
