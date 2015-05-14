@@ -39,3 +39,8 @@ publish
 # build script local files
 build/buildinfo.properties
 build/config/buildinfo.properties
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
