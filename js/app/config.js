@@ -3,7 +3,7 @@ define([], function() {
 		chatanoo: {
 			// url: 'http://preprod.ws.dring93.org/services',
 			// api_key: 'MJC94_5f86d751cf83daecf09c4493e8',
-			url: 'http://chatanoo-core-staging.elasticbeanstalk.com',
+			url: 'http://chatanoo-core.elasticbeanstalk.com',
 			api_key: 'a24j2sW2ueaadyy9462EQF3dc3BUZUje',
 			anonymous_user: {
 				login: "anonymous",
