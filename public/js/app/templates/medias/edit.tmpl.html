@@ -1,0 +1,27 @@
+<div class="left">
+	<% if( media.get( '__className' ) == "Vo_Media_Video" ) { %>
+		<img src="<%- config.mediasCenter.url %>m/preview/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
+	<% } else if( media.get( '__className' ) == "Vo_Media_Picture" ) { %>
+		<img src="<%- config.mediasCenter.url %>m/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
+	<% } else if( media.get( '__className' ) == "Vo_Media_Audio" ) { %>
+		<img src="img/preview-audio.jpg" alt="" />
+	<% } %>
+	
+	<% if( config.isCordova ) { %>
+    	<input name="file" id="file" type="button" value="Choisir..." />
+	<% } else { %>
+		<iframe id="upload-frame" width="100%" height="80px" src="upload/upload-iframe.html" frameborder="0"></iframe>
+	<% } %>
+	
+	<input type="hidden" name="url" value="<%- media.get( 'url' ) %>" />
+</div>
+
+<div class="right">
+	<textarea name="title" class="small" placeholder="Titre de votre média"><% if( !_.isNull( media.get( 'title' ) ) ) print( media.get( 'title' ) ) %></textarea>
+	<textarea name="description" class="medium" placeholder="Entrez la description de votre média"><% if( !_.isNull( media.get( 'description' ) ) ) print( media.get( 'description' ) ) %></textarea>
+</div>
+
+<div class="edit">
+	<input type="button" name="edit" value="Valider" />
+	<input type="button" name="cancel" value="Annuler" />
+</div>

@@ -1,0 +1,21 @@
+<% if( !_.isUndefined( model.title ) && !_.isNull( model.title ) && model.title != '' ) { %>
+<% if ( config.platform == 'ios' && (model.back != false || model.close != false) ) { %>
+<div class="left">
+	<% if( config.platform == 'ios' && model.back != false ) { %>
+		<a href="<%- model.back %>" class="back">Retour</a>
+	<% } else if( config.platform == 'ios' && model.close != false ) { %>
+		<a href="<%- model.close %>" class="close">Annuler</a>
+	<% } %>
+</div>	
+<% } %>
+
+<div class="center">
+	<h1><%= model.title %></h1>
+</div>
+
+<div class="right">
+	<% if( config.platform == 'ios' ) { %>
+		<input class="logout" type="button" name="logout" value="Déconnexion" />
+	<% } %>
+</div>
+<% } %>

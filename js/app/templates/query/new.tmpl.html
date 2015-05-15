@@ -1,9 +1,0 @@
-<form id="query-form" action="">
-	<textarea name="content" class="medium" placeholder="Tapez votre ici votre question!"><% if( !_.isUndefined( query.get( 'content' ) ) ) print( query.get( 'content' ) ) %></textarea>
-	<textarea name="description" class="big" placeholder="Donnez une description ou des informations complémentaires sur votre question."><% if( !_.isUndefined( query.get( 'description' ) ) ) print( query.get( 'description' ) ) %></textarea>
-	<% if(mode == "new") { %>
-		<input type="submit" name="submit" value="Ajouter ma question" />
-	<% } else { %>
-		<input type="submit" name="submit" value="Modifier ma question" />
-	<% } %>
-</form>

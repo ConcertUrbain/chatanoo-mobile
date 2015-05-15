@@ -1,0 +1,12 @@
+<p><textarea><%- comment.get('content') %></textarea></p>
+<span>
+	<% if( !_.isNull( comment.user )) { %>
+		Par <%- comment.user.pseudo %>, 
+	<% } %>
+	<%- comment.get('addDate').fromNow() %>
+</span>
+
+<div class="edit">
+	<input type="button" name="edit" value="Valider" />
+	<input type="button" name="cancel" value="Annuler" />
+</div>
