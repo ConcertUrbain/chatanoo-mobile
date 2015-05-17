@@ -4,18 +4,18 @@
 
 require.config({
   paths: {
-	// plugins
-	order: 'libs/require/order',
-	text: 'libs/require/text',
-	
-	// libs
+  // plugins
+  order: 'libs/require/order',
+  text: 'libs/require/text',
+  
+  // libs
     jQuery: 'libs/require/jquery',
     Underscore: 'libs/require/underscore',
     Backbone: 'libs/require/backbone',
     Chatanoo: 'libs/require/chatanoo',
 
-	// configs
-	Config: 'app/config-ios'
+  // configs
+  Config: 'app/config-ios'
   }, 
   waitSeconds: 45
 });
@@ -23,8 +23,8 @@ require.config({
 require([
   'app/app'
 ], function(App) {
-	console.log("App ios loaded");
-  	App.initialize();
+  console.log("App ios loaded");
+    App.initialize();
 });
 
 

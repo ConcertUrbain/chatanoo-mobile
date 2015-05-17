@@ -1,11 +1,11 @@
 define([
-	'Backbone',
-	'app/models/meta_model'
+  'Backbone',
+  'app/models/meta_model'
 ], function(Backbone, Meta) {
 
-	var Metas = Backbone.Collection.extend({
-    	model: Meta
-	});
-	
-	return Metas;
+  var Metas = Backbone.Collection.extend({
+      model: Meta
+  });
+  
+  return Metas;
 });

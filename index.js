@@ -6,13 +6,13 @@ var server = express();
 
 server.get('/js/app/config.js', function(req, res){
   fs.readFile('public/js/app/config.js', 'utf8', function(err, data) {
-  	if (err) {
-	    return console.log(err);
-	  }
+    if (err) {
+      return console.log(err);
+    }
     _(process.env).each( function(val, key) {
       data = data.replace( new RegExp("\\$\\{" + key + "\\}", "g"), val );
     });
-	  res.send(data);
+    res.send(data);
   });
 });
 server.use( express.static('public') )

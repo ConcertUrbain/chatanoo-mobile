@@ -1,20 +1,20 @@
 <p><%- comment.get('content') %></p>
 <span>
-	<% if( !_.isNull( comment.user )) { %>
-		Par <%- comment.user.pseudo %>, 
-	<% } %>
-	<%- comment.get('addDate').fromNow() %>
+  <% if( !_.isNull( comment.user )) { %>
+    Par <%- comment.user.pseudo %>, 
+  <% } %>
+  <%- comment.get('addDate').fromNow() %>
 </span>
 
 <% if( !_.isNull( user ) && (user.role == 'admin' || ( !_.isNull( comment.user ) && user.id == comment.user.id && user.role == 'anonymous') ) ) { %>
 <div class="admin">
-	<h3>Administration</h3>
-	<% if( comment.get( '_isValid' ) != 0 ) { %>
-		<input type="button" name="unvalidate" value="Masquer" />
-	<% } else { %>
-		<input type="button" name="validate" value="Afficher" />
-	<% } %>
-	<input type="button" name="edit" value="Modifier" />
-	<input type="button" name="delete" value="Supprimer" />
+  <h3>Administration</h3>
+  <% if( comment.get( '_isValid' ) != 0 ) { %>
+    <input type="button" name="unvalidate" value="Masquer" />
+  <% } else { %>
+    <input type="button" name="validate" value="Afficher" />
+  <% } %>
+  <input type="button" name="edit" value="Modifier" />
+  <input type="button" name="delete" value="Supprimer" />
 </div>
 <% } %>

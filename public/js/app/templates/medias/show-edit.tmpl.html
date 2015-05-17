@@ -1,34 +1,34 @@
 <div class="left">
-	<% if( media.get( '__className' ) == "Vo_Media_Video" ) { %>
-		<img src="<%- config.mediasCenter.url %>m/preview/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
-	<% } else if( media.get( '__className' ) == "Vo_Media_Picture" ) { %>
-		<img src="<%- config.mediasCenter.url %>m/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
-	<% } else if( media.get( '__className' ) == "Vo_Media_Audio" ) { %>
-		<img src="img/preview-audio.jpg" alt="" />
-	<% } %>
+  <% if( media.get( '__className' ) == "Vo_Media_Video" ) { %>
+    <img src="<%- config.mediasCenter.url %>m/preview/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
+  <% } else if( media.get( '__className' ) == "Vo_Media_Picture" ) { %>
+    <img src="<%- config.mediasCenter.url %>m/160x120/<%- media.get( 'url' ) %>.jpg" alt="" />
+  <% } else if( media.get( '__className' ) == "Vo_Media_Audio" ) { %>
+    <img src="img/preview-audio.jpg" alt="" />
+  <% } %>
 </div>
 
 <div class="right">
-	<% if( _.isNull( media.get( 'title' ) )  || media.get( 'title' ) == '' ) { %>
-		<h3>Pas de titre</h3>
- 	<% } else { %>
-		<h3><%- media.get( 'title' ) %></h3>
- 	<% } %>
-	
-	<% if( _.isNull( media.get( 'description' ) ) || media.get( 'description' ) == '' ) { %>
-		<p>Pas de description</p>
- 	<% } else { %>
-		<p><%- media.get( 'description' ) %></p>
- 	<% } %>
+  <% if( _.isNull( media.get( 'title' ) )  || media.get( 'title' ) == '' ) { %>
+    <h3>Pas de titre</h3>
+  <% } else { %>
+    <h3><%- media.get( 'title' ) %></h3>
+  <% } %>
+
+  <% if( _.isNull( media.get( 'description' ) ) || media.get( 'description' ) == '' ) { %>
+    <p>Pas de description</p>
+  <% } else { %>
+    <p><%- media.get( 'description' ) %></p>
+  <% } %>
 </div>
 
 <div class="admin">
-	<h3>Administration</h3>
-	<% if( media.get( '_isValid' ) != 0 ) { %>
-		<input type="button" name="unvalidate" value="Masquer" />
-	<% } else { %>
-		<input type="button" name="validate" value="Afficher" />
-	<% } %>
-	<input type="button" name="edit" value="Modifier" />
-	<input type="button" name="delete" value="Supprimer" />
+  <h3>Administration</h3>
+  <% if( media.get( '_isValid' ) != 0 ) { %>
+    <input type="button" name="unvalidate" value="Masquer" />
+  <% } else { %>
+    <input type="button" name="validate" value="Afficher" />
+  <% } %>
+  <input type="button" name="edit" value="Modifier" />
+  <input type="button" name="delete" value="Supprimer" />
 </div>
