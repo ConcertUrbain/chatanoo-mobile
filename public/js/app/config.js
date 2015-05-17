@@ -1,10 +1,11 @@
-define([], function() {
+define([
+  'json!https://s3-eu-west-1.amazonaws.com/chatanoo-cdn/config.json'
+], function(config) {
   return {
     chatanoo: {
-      // url: 'http://preprod.ws.dring93.org/services',
-      // api_key: 'MJC94_5f86d751cf83daecf09c4493e8',
       url: '${WS_URL}',
-      api_key: 'a24j2sW2ueaadyy9462EQF3dc3BUZUje',
+      sessions: config.api_key,
+
       anonymous_user: {
         login: "anonymous",
         pass: "anonymous"

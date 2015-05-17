@@ -36,7 +36,6 @@ define([
     },
 
     logout: function() {
-      bou();
       this.trigger('logout');
     },
 

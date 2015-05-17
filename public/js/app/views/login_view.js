@@ -20,11 +20,12 @@ define([
 
     initialize: function() {
 
-      },
+    },
 
     model: new Login(),
 
     events: {
+      "change form select[name=session]": "loginChange",
       "change form input[name=login]": "loginChange",
       "change form input[name=password]": "loginChange",
       "click form input[type=submit]": "proccessFrom",
@@ -34,11 +35,12 @@ define([
 
     render: function() {
       this.$el.removeClass().addClass('login-view');
-      this.$el.html( _.template( template, {} ) );
+      this.$el.html( _.template( template, { sessions: Config.chatanoo.sessions } ) );
       return this;
     },
 
     loginChange: function() {
+      this.model.set("session", this.$el.find('select[name=session]').val());
       this.model.set("login", this.$el.find('input[name=login]').val());
       this.model.set("pass", this.$el.find('input[name=password]').val());
     },

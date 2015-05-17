@@ -7,16 +7,17 @@ require.config({
   // plugins
   order: 'libs/require/order',
   text: 'libs/require/text',
-  
+  json: 'libs/require/json',
+
   // libs
-    jQuery: 'libs/require/jquery',
-    Underscore: 'libs/require/underscore',
-    Backbone: 'libs/require/backbone',
-    Chatanoo: 'libs/require/chatanoo',
+  jQuery: 'libs/require/jquery',
+  Underscore: 'libs/require/underscore',
+  Backbone: 'libs/require/backbone',
+  Chatanoo: 'libs/require/chatanoo',
 
   // configs
   Config: 'app/config'
-  }, 
+  },
   waitSeconds: 45
 });
 
