@@ -1,9 +1,9 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
-  'Chatanoo',
-  'Config'
+  'backbone',
+  'underscore',
+  'jquery',
+  'chatanoo',
+  'config'
 ], function(Backbone, _, $, Chatanoo, Config) {
 
   var Login = Backbone.Model.extend(

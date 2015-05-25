@@ -1,7 +1,7 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
+  'backbone',
+  'underscore',
+  'jquery',
 
   'app/models/query_model',
 

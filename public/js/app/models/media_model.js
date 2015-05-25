@@ -1,7 +1,7 @@
 define([
-  'Backbone',
-  'Underscore',
-  'Chatanoo'
+  'backbone',
+  'underscore',
+  'chatanoo'
 ], function(Backbone, _, Chatanoo) {
 
   var Media = Backbone.Model.extend(
@@ -10,9 +10,9 @@ define([
       defaults: function() {
         return {};
       },
-  
+
       initialize: function() {
-    
+
       },
 
     validateMedia: function() {
@@ -22,7 +22,7 @@ define([
         this.set('_isValid', 1);
       }, this);
     },
-        
+
     unvalidateMedia: function() {
       var r = Chatanoo.medias.validateMedia( this.get("id"), 'Video', false );
       Chatanoo.medias.on( r.success, function( mediaId ) {
@@ -30,14 +30,14 @@ define([
         this.set('_isValid', 0);
       }, this);
     },
-        
+
     deleteMedia: function() {
       var r = Chatanoo.medias.deleteMedia( this.get("id") );
       Chatanoo.medias.on( r.success, function( bool ) {
         this.trigger("delete");
       }, this);
     },
-    
+
     addMedia: function(media) {
       var r = Chatanoo.items.addMediaIntoItem( media, this.get( 'item_id' ) );
       Chatanoo.items.on( r.success, function( mediaId ) {
@@ -46,7 +46,7 @@ define([
         this.trigger("added");
       }, this);
     },
-        
+
     editMedia: function(options) {
       var media = _.extend(this.toJSON(), options);
       var r = Chatanoo.medias.setMedia( media );
@@ -56,7 +56,7 @@ define([
       }, this);
     }
   });
-  //_.extend(Media, Chatanoo.ValueObject.Media.Abstract); 
-  
+  //_.extend(Media, Chatanoo.ValueObject.Media.Abstract);
+
   return Media;
 });

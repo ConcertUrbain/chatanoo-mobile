@@ -1,11 +1,11 @@
-define(["libs/raphael-2.1.0"], function() {
+define([], function() {
   try {
     var paper = Raphael(10, 50, 320, 200);
   } catch (e) {
     console.log('Raphaeljs doesn\'t work on your browser.');
     return null;
   }
-  
+
   var spinner = function(holderid, R1, R2, count, stroke_width, colour) {
       var sectorsCount = count || 12,
           color = colour || "#fff",
@@ -15,11 +15,11 @@ define(["libs/raphael-2.1.0"], function() {
           cx = r2 + width,
           cy = r2 + width,
           r = Raphael(holderid, r2 * 2 + width * 2, r2 * 2 + width * 2),
-    
+
           sectors = [],
           opacity = [],
           beta = 2 * Math.PI / sectorsCount,
-    
+
           pathParams = {stroke: color, "stroke-width": width, "stroke-linecap": "round"};
           Raphael.getColor.reset();
       for (var i = 0; i < sectorsCount; i++) {
@@ -46,7 +46,7 @@ define(["libs/raphael-2.1.0"], function() {
           r.remove();
       };
   }
-  
+
   return {
     init: spinner
   }

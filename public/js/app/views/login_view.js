@@ -1,11 +1,11 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
+  'backbone',
+  'underscore',
+  'jquery',
 
   'app/models/login_model',
 
-  'Config',
+  'config',
 
   'text!app/templates/login.tmpl.html'
 ], function(Backbone, _, $,

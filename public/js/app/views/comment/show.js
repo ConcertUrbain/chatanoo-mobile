@@ -1,7 +1,7 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
+  'backbone',
+  'underscore',
+  'jquery',
 
   'text!app/templates/comment/show.tmpl.html',
   'text!app/templates/comment/edit.tmpl.html',

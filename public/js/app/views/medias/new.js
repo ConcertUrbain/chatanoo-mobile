@@ -1,10 +1,10 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
-  'Chatanoo',
+  'backbone',
+  'underscore',
+  'jquery',
+  'chatanoo',
 
-  'Config',
+  'config',
 
   'text!app/templates/medias/show-edit.tmpl.html',
   'text!app/templates/medias/edit.tmpl.html',

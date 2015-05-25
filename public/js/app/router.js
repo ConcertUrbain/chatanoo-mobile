@@ -1,8 +1,8 @@
 define([
-    'jQuery',
-    'Underscore',
-    'Backbone',
-    'Chatanoo',
+    'jquery',
+    'underscore',
+    'backbone',
+    'chatanoo',
 
   'app/views/app_view'
 ], function ($, _, Backbone, Chatanoo,

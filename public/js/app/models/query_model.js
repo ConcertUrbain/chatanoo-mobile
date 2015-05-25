@@ -1,31 +1,31 @@
 define([
-  'Backbone',
-  'Underscore',
-  'Chatanoo',
-  
+  'backbone',
+  'underscore',
+  'chatanoo',
+
   'app/collections/items'
 ], function(Backbone, _, Chatanoo,
   Items) {
-  
+
   var Query = Backbone.Model.extend(
   {
       // Default attributes for the Query item.
       defaults: function() {
         return {};
       },
-  
+
     urlRoot: "/queries",
-  
+
     items: new Items(),
-    
+
     isOnError: false,
-  
+
       initialize: function() {
       this.on("change:id", function() { this.items.url = this.urlRoot + "/" + this.get("id") + "/items"; }, this);
       },
-  
+
     user: null,
-    loadUser: function() {        
+    loadUser: function() {
       var mThis = this;
       var r = Chatanoo.users.getUserById( this.get("_user") );
       Chatanoo.users.on( r.success, function(user) {
@@ -33,10 +33,10 @@ define([
         mThis.trigger("change change:user");
       }, mThis);
     },
-  
+
     loadQuery: function() {
       this.isOnError = false;
-      
+
       var mThis = this;
       var r = Chatanoo.queries.getQueryById( this.get("id") );
       Chatanoo.queries.on( r.success, function(query) {
@@ -49,7 +49,7 @@ define([
         mThis.trigger("change");
       }, mThis);
     },
-  
+
     loadItems: function() {
       this.items.remove(this.items.toArray());
       var mThis = this;
@@ -59,8 +59,8 @@ define([
         mThis.trigger("change change:items");
       }, mThis);
     },
-    
-    
+
+
     addQuery: function(query) {
       var r = Chatanoo.queries.addQuery( query );
       Chatanoo.queries.on( r.success, function( queryId ) {
@@ -78,8 +78,8 @@ define([
         this.trigger("edited");
       }, this);
     },
-    
-    
+
+
     validateQuery: function() {
       var r = Chatanoo.queries.validateVo( this.get("id"), true, false );
       Chatanoo.queries.on( r.success, function( queryId ) {
@@ -88,7 +88,7 @@ define([
         this.loadItems();
       }, this);
     },
-    
+
     unvalidateQuery: function() {
       var r = Chatanoo.queries.validateVo( this.get("id"), false, false );
       Chatanoo.queries.on( r.success, function( queryId ) {
@@ -97,7 +97,7 @@ define([
         this.loadItems();
       }, this);
     },
-    
+
     deleteQuery: function() {
       var r = Chatanoo.queries.deleteQuery( this.get("id") );
       Chatanoo.queries.on( r.success, function( bool ) {

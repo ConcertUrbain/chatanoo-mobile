@@ -7,7 +7,7 @@
 {
   // Initial Setup
   // -------------
-  
+
   // Save a reference to the global object (`window` in the browser, `global`
   // on the server).
   var root = this;
@@ -15,41 +15,41 @@
    // Save the previous value of the `Backbone` variable, so that it can be
    // restored later on, if `noConflict` is used.
     var previousChatanoo = root.Chatanoo;
-  
+
     // Create a local reference to slice/splice.
   var slice = Array.prototype.slice;
   var splice = Array.prototype.splice;
-  
+
   var Chatanoo;
   if (typeof exports !== 'undefined') {
     Chatanoo = exports;
   } else {
     Chatanoo = root.Chatanoo = {};
   }
-  
+
   Chatanoo.VERSION = "0.1.0";
-  
+
   // Require Underscore, if we're on the server, and it's not already present.
   var _ = root._;
   if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
-  
+
   Chatanoo.noConflict = function() {
       root.Chatanoo = previousChatanoo;
       return this;
   };
-  
+
   // Global variables
   // ----------------
   Chatanoo.baseurl = null;
   Chatanoo.apiKey = null;
   Chatanoo.sessionKey = null;
-  
+
   // Global methods
   // --------------
   Chatanoo.init = function(baseurl, apiKey) {
     Chatanoo.baseurl = baseurl;
     Chatanoo.apiKey = apiKey;
-    
+
     // Init services
     Chatanoo.connection =   new Chatanoo.Service.Connection(baseurl + "/connection/json");
     Chatanoo.comments =   new Chatanoo.Service.Comments(baseurl + "/comments/json");
@@ -62,7 +62,7 @@
     Chatanoo.sessions =   new Chatanoo.Service.Sessions(baseurl + "/sessions/json");
     Chatanoo.users =     new Chatanoo.Service.Users(baseurl + "/users/json");
   };
-  
+
   Chatanoo.connect = function(login, pass) {
     Chatanoo.sessionKey = null;
     Chatanoo.connection.on('connect:success', function(sessionKey) {
@@ -73,15 +73,15 @@
     }, this);
     Chatanoo.connection.connect(login, pass);
   };
-  
+
   Chatanoo.disconnect = function() {
-    
+
   };
-  
+
 
   // Regular expression used to split event strings
   var eventSplitter = /\s+/;
-  
+
   // Backbone implementation off events
   // A module that can be mixed in to *any object* in order to provide it with
   // custom events. You may bind with `on` or remove with `off` callback functions
@@ -93,16 +93,16 @@
   //     object.trigger('expand');
   //
   var Events = Chatanoo.Events = {
-    
+
     // Bind one or more space separated events, `events`, to a `callback`
     // function. Passing `"all"` will bind the callback to all events fired.
     on: function(events, callback, context) {
-    
+
       var calls, event, node, tail, list;
       if (!callback) return this;
       events = events.split(eventSplitter);
       calls = this._callbacks || (this._callbacks = {});
-    
+
       // Create an immutable callback list, allowing traversal during
       // modification.  The tail is an empty object that will always be used
       // as the next node.
@@ -114,23 +114,23 @@
         node.callback = callback;
         calls[event] = {tail: tail, next: list ? list.next : node};
       }
-    
+
       return this;
     },
-    
+
     // Remove one or many callbacks. If `context` is null, removes all callbacks
     // with that function. If `callback` is null, removes all callbacks for the
     // event. If `events` is null, removes all bound callbacks for all events.
     off: function(events, callback, context) {
       var event, calls, node, tail, cb, ctx;
-    
+
       // No events, or removing *all* events.
       if (!(calls = this._callbacks)) return;
       if (!(events || callback || context)) {
         delete this._callbacks;
         return this;
       }
-    
+
       // Loop through the listed events and contexts, splicing them out of the
       // linked list of callbacks if appropriate.
       events = events ? events.split(eventSplitter) : _.keys(calls);
@@ -148,10 +148,10 @@
           }
         }
       }
-    
+
       return this;
     },
-    
+
     // Trigger one or many events, firing all bound callbacks. Callbacks are
     // passed the same arguments as `trigger` is, apart from the event name
     // (unless you're listening on `"all"`, which will cause your callback to
@@ -162,7 +162,7 @@
       all = calls.all;
       events = events.split(eventSplitter);
       rest = slice.call(arguments, 1);
-    
+
       // For each event, walk through the linked list of callbacks twice,
       // first to trigger the event, then to trigger any `"all"` callbacks.
       while (event = events.shift()) {
@@ -180,12 +180,12 @@
           }
         }
       }
-    
+
       return this;
     }
-    
+
   };
-  
+
   // --------
   // SERVICES
   // --------
@@ -194,19 +194,19 @@
 
   // Abstract Objects
   // ----------------
-  
+
   var AbstractService = Chatanoo.Service.Abstract = {
     url: null,
-    
+
     initialize: function(url) {
       this.url = url;
     },
-    
+
     getRequest: function(method, data, options) {
       options = options || {};
-      
+
       var mThis = this;
-      var d = {   
+      var d = {
         params: this.prepareData( data ),
         id: _.uniqueId(method),
         method: method,
@@ -217,8 +217,8 @@
         data: JSON.stringify(d),
         cache : false,
         dataType: "json",
-        beforeSend: function (xhr) { 
-          xhr.setRequestHeader("Authorization", Chatanoo.sessionKey); 
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader("Authorization", Chatanoo.sessionKey);
         },
         success: function(response) {
           Chatanoo.trigger('finish');
@@ -235,17 +235,17 @@
         }
       };
       _.extend(a, options);
-      
+
       Chatanoo.trigger('loading');
       this.trigger('loading ' + method + ':loading ' + method + ':loading:' + d.id);
       $.ajax(a);
-      
+
       return {
         success: method + ':success:' + d.id,
         error: method + ':error:' + d.id,
       };
     },
-    
+
     prepareData: function(data) {
       for(prop in data) {
         switch(true)
@@ -260,7 +260,7 @@
       }
       return data;
     },
-    
+
     jsonToValueObject: function(json) {
       switch(true)
       {
@@ -274,53 +274,53 @@
             case "Vo_Session":       klass = Chatanoo.ValueObject.Session;     break;
             case "Vo_Comment":       klass = Chatanoo.ValueObject.Comment;     break;
             case "Vo_User":       klass = Chatanoo.ValueObject.User;       break;
-            
+
             case "Vo_Data_Adress":     klass = Chatanoo.ValueObject.Data.Address;   break;
             case "Vo_Data_Carto":     klass = Chatanoo.ValueObject.Data.Carto;   break;
             case "Vo_Data_Vote":     klass = Chatanoo.ValueObject.Data.Vote;   break;
-            
+
             case "Vo_Media_Picture":   klass = Chatanoo.ValueObject.Media.Picture; break;
               case "Vo_Media_Sound":     klass = Chatanoo.ValueObject.Media.Sound;   break;
             case "Vo_Media_Text":     klass = Chatanoo.ValueObject.Media.Text;   break;
             case "Vo_Media_Video":     klass = Chatanoo.ValueObject.Media.Video;   break;
           }
-          
+
           if(!klass) {
             var cat = {};
             _(json).each( function(obj, key) { cat[key] = this.jsonToValueObject(obj); }, this );
             return cat;
           }
-            
+
           vo = new klass(json);
-          
+
           return vo;
-          
+
         case _.isArray(json):
           return _(json).map(this.jsonToValueObject);
-          
+
         default:
           return json;
       }
     }
   }
-  
+
   // Concrete services
   // -----------------
-  
+
   // Connection
   var Connection = Chatanoo.Service.Connection = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Connection.prototype, AbstractService, Events, {
     connect: function(login, pass) {
       var mThis = this;
-      var data = {   
+      var data = {
         "params": [login, pass, Chatanoo.apiKey],
         "id": _.uniqueId(),
         "method": "login"
       }
-      
+
       Chatanoo.trigger('loading');
       $.ajax({
         url: this.url,
@@ -350,12 +350,12 @@
       return this.getRequest("getCurrentUser", {});
     }
   });
-  
+
   // Comments
   var Comments = Chatanoo.Service.Comments = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Comments.prototype, AbstractService, Events, {
     getComments: function(options) {
       options = options || [];
@@ -411,12 +411,12 @@
       return this.getRequest("removeDataFromVo", args);
     }
   });
-  
+
   // Datas
   var Datas = Chatanoo.Service.Datas = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Datas.prototype, AbstractService, Events, {
     getDatas: function(options) {
       options = options || [];
@@ -459,12 +459,12 @@
       return this.getRequest("deleteData", args);
     }
   });
-  
+
   // Items
   var Items = Chatanoo.Service.Items = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Items.prototype, AbstractService, Events, {
     getItems: function(options) {
       options = options || [];
@@ -548,12 +548,12 @@
       return this.getRequest("getRateOfItem", args);
     }
   });
-  
+
   // Medias
   var Medias = Chatanoo.Service.Medias = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Medias.prototype, AbstractService, Events, {
     getMedias: function(options) {
       options = options || [];
@@ -616,12 +616,12 @@
       return this.getRequest("removeDataFromMedia", args);
     }
   });
-  
+
   // Plugins
   var Plugins = Chatanoo.Service.Plugins = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Plugins.prototype, AbstractService, Events, {
     call: function(name, params) {
       args = [name, params];
@@ -633,7 +633,7 @@
   var Queries = Chatanoo.Service.Queries = function (url) {
     this.initialize(url);
   }
-    
+
   _.extend(Queries.prototype, AbstractService, Events, {
       getQueries: function(options) {
       options = options || [];
@@ -713,12 +713,12 @@
       return this.getRequest("removeDataFromVo", args);
     }
   });
-  
+
   // Search
   var Search = Chatanoo.Service.Search = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Search.prototype, AbstractService, Events, {
     getMetas: function(options) {
       options = options || [];
@@ -749,17 +749,17 @@
       return this.getRequest("deleteMeta", args);
     },
     search: function(request, section) {
-      section = section || "Default"; 
+      section = section || "Default";
       args = [request, section];
       return this.getRequest("search", args);
     }
   });
-  
+
   // Sessions
   var Sessions = Chatanoo.Service.Sessions = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Sessions.prototype, AbstractService, Events, {
     getSessions: function(options) {
       options = options || [];
@@ -814,12 +814,12 @@
       return this.getRequest("removeMetaFromVo", args);
     }
   });
-  
+
   // Users
   var Users = Chatanoo.Service.Users = function (url) {
     this.initialize(url);
   }
-  
+
   _.extend(Users.prototype, AbstractService, Events, {
     getUsers: function(options) {
       options = options || [];
@@ -858,72 +858,72 @@
   // ------------
   // VALUE OBJECT
   // ------------
-  
+
   Chatanoo.ValueObject = {};
-  
+
   var AbstractValueObject = Chatanoo.ValueObject.Abstract = {
     initialize: function(json) {
       for(prop in json)
       {
         switch(prop) {
           case "addDate":
-          case "setDate": 
+          case "setDate":
             this[prop] = moment(json[prop], "YYYY.MM.DD HH:mm:ss"); break;
-          default: 
+          default:
             this[prop] = json[prop]; break;
         }
       }
     }
   };
-  
+
   // Item
   var Item = Chatanoo.ValueObject.Item = function(json) {
     this.__className = "Vo_Item";
     this.initialize(json);
   }
-  
+
   _.extend(Item.prototype, AbstractValueObject, {
-    
+
   });
-  
+
   // Meta
   var Meta = Chatanoo.ValueObject.Meta = function(json) {
     this.__className = "Vo_Meta";
     this.initialize(json);
   }
-  
+
   _.extend(Meta.prototype, AbstractValueObject, {
-    
+
   });
-  
+
   // Query
   var Query = Chatanoo.ValueObject.Query = function(json) {
     this.__className = "Vo_Query";
     this.initialize(json);
   }
-  
+
   _.extend(Query.prototype, AbstractValueObject, {
-    
+
   });
-  
+
   // Session
   var Session = Chatanoo.ValueObject.Session = function(json) {
     this.__className = "Vo_Session";
     this.initialize(json);
   }
-  
+
   _.extend(Session.prototype, AbstractValueObject, {
-    
+
   });
-  
+
   // User
   var User = Chatanoo.ValueObject.User = function(json) {
     this.__className = "Vo_User";
     this.initialize(json);
   }
-  
+
   _.extend(User.prototype, AbstractValueObject, {
-    
+
   });
 
   // Comment
@@ -931,105 +931,105 @@
     this.__className = "Vo_Comment";
     this.initialize(json);
   }
-    
+
   _.extend(Comment.prototype, AbstractValueObject, {
-    
+
   });
-  
+
   // -----
   // DATAS
   // -----
   Chatanoo.ValueObject.Data = {};
-  
+
   var AbstractDataValueObject = Chatanoo.ValueObject.Data.Abstract = {
-    
+
   };
-  
+
   _.extend(AbstractDataValueObject, AbstractValueObject);
-  
+
   // Address
   var Address = Chatanoo.ValueObject.Data.Address = function(json) {
     this.__className = "Vo_Data_Adress";
     this.initialize(json);
   }
-  
+
   _.extend(Address.prototype, AbstractDataValueObject, {
-    
+
   });
-  
+
   // Carto
   var Carto = Chatanoo.ValueObject.Data.Carto = function(json) {
     this.__className = "Vo_Data_Carto";
     this.initialize(json);
   }
-  
+
   _.extend(Carto.prototype, AbstractDataValueObject, {
-    
+
   })
-  
+
   // Vote
   var Vote = Chatanoo.ValueObject.Data.Vote = function(json) {
     this.__className = "Vo_Data_Vote";
     this.initialize(json);
   }
-  
+
   _.extend(Vote.prototype, AbstractDataValueObject, {
-    
+
   })
-  
-  
+
+
   // ------
   // MEDIAS
   // ------
   Chatanoo.ValueObject.Media = {};
-  
+
   var AbstractMediaValueObject = Chatanoo.ValueObject.Media.Abstract = {
-    
+
   };
-  
+
   _.extend(AbstractMediaValueObject, AbstractValueObject);
-  
+
   // Picture
   var Picture = Chatanoo.ValueObject.Media.Picture = function(json) {
     this.__className = "Vo_Media_Picture";
     this.initialize(json);
   }
-  
+
   _.extend(Picture.prototype, AbstractMediaValueObject, {
-    
+
   });
-  
+
   // Sound
   var Sound = Chatanoo.ValueObject.Media.Sound = function(json) {
     this.__className = "Vo_Media_Sound";
     this.initialize(json);
   }
-  
+
   _.extend(Sound.prototype, AbstractMediaValueObject, {
-    
+
   });
-  
+
   // Text
   var Text = Chatanoo.ValueObject.Media.Text = function(json) {
     this.__className = "Vo_Media_Text";
     this.initialize(json);
   }
-  
+
   _.extend(Text.prototype, AbstractMediaValueObject, {
-    
+
   });
-  
+
   // Video
   var Video = Chatanoo.ValueObject.Media.Video = function(json) {
     this.__className = "Vo_Media_Video";
     this.initialize(json);
   }
-  
+
   _.extend(Video.prototype, AbstractMediaValueObject, {
-    
+
   });
-  
+
   //
   _.extend(Chatanoo, Events);
-  
+
 }).call(this);

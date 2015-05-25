@@ -1,8 +1,9 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
-  'Chatanoo',
+  'backbone',
+  'underscore',
+  'jquery',
+  'chatanoo',
+  'moment',
 
   'app/models/item_model',
 
@@ -11,7 +12,7 @@ define([
   'text!app/templates/item/new.tmpl.html',
 
   'app/views/app_view'
-], function(Backbone, _, $, Chatanoo,
+], function(Backbone, _, $, Chatanoo, moment,
   Item,
   MediaView,
   template,

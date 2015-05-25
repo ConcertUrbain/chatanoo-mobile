@@ -1,27 +1,27 @@
 define([
-  'Backbone',
-  'Underscore',
-  'Chatanoo',
-  
+  'backbone',
+  'underscore',
+  'chatanoo',
+
   'app/collections/queries'
 ], function(Backbone, _, Chatanoo,
   Queries) {
-  
+
   var Session = Backbone.Model.extend({
       // Default attributes for the header item.
       defaults: function() {
         return {};
       },
-  
+
     queries: new Queries(),
-  
+
       initialize: function() {
-    
+
       },
-  
+
     loadQueries: function() {
       this.queries.remove(this.queries.toArray());
-      
+
       var mThis = this;
       var r = Chatanoo.queries.getQueries();
       Chatanoo.queries.on(r.success, function(queries) {
@@ -31,6 +31,6 @@ define([
     }
   });
   //_.extend(Session, Chatanoo.ValueObject.Session);
-  
+
   return Session;
 });

@@ -1,8 +1,8 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
-  'Chatanoo',
+  'backbone',
+  'underscore',
+  'jquery',
+  'chatanoo',
 
   'app/models/header_model',
   'app/views/header_view',

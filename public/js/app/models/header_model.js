@@ -1,7 +1,7 @@
 define([
-  'Backbone',
+  'backbone',
 ], function(Backbone) {
-  
+
   var Header = Backbone.Model.extend(
   {
       // Default attributes for the header item.
@@ -14,8 +14,8 @@ define([
       close: false
         };
       },
-  
-      initialize: function() 
+
+      initialize: function()
       {
         if (!this.get("title")) {
           this.set({"title": this.defaults.title});

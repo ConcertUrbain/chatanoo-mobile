@@ -1,10 +1,10 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
-  'Chatanoo',
+  'backbone',
+  'underscore',
+  'jquery',
+  'chatanoo',
 
-  'Config',
+  'config',
 
   'app/models/item_model',
 

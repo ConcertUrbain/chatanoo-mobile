@@ -1,9 +1,9 @@
 define([
-  'Backbone',
-  'Underscore',
-  'jQuery',
+  'backbone',
+  'underscore',
+  'jquery',
 
-  'Config',
+  'config',
 
   'text!app/templates/header.tmpl.html'
 ], function(Backbone, _, $,
