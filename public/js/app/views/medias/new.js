@@ -3,6 +3,7 @@ define([
   'underscore',
   'jquery',
   'chatanoo',
+  'aws',
 
   'config',
 
@@ -10,10 +11,27 @@ define([
   'text!app/templates/medias/edit.tmpl.html',
 
   'app/views/app_view'
-], function(Backbone, _, $, Chatanoo,
+], function(Backbone, _, $, Chatanoo, AWS,
   Config,
   template, editTemplate,
   app_view) {
+
+  var bucketName = Config.mediasCenter.inputBucket;
+  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: Config.mediasCenter.identityPoolId,
+  });
+  AWS.config.region = Config.mediasCenter.region;
+  var s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+  function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
+  }
 
   var MediaView = Backbone.View.extend(
   {
@@ -29,7 +47,8 @@ define([
       "click .admin > input[name=edit]": "editMedia",
       "click .admin > input[name=delete]": "deleteMedia",
       //edit
-      "click input[name=file]": "chooseFile",
+      // "click input[name=file]": "chooseFile",
+      "change input[name=file]": "uplaoadFile",
       "click .edit > input[name=edit]": "validateEditMedia",
       "click .edit > input[name=cancel]": "cancelEditMedia"
     },
@@ -66,36 +85,93 @@ define([
       return this;
     },
 
-    chooseFile: function() {
+    chooseFile: function(event) {
       var mThis = this;
-      var actionSheet = window.plugins.actionSheet;
-      actionSheet.create('Choisir...', ['Album', 'Vidéo', 'Photo', 'Audio', 'Annuler'], function(buttonValue, buttonIndex) {
-          console.warn('create(), arguments=' + Array.prototype.slice.call(arguments).join(', '));
+      if (window.plugins) {
+        // CORDOVA
+        var actionSheet = window.plugins.actionSheet;
+        actionSheet.create('Choisir...', ['Album', 'Vidéo', 'Photo', 'Audio', 'Annuler'], function(buttonValue, buttonIndex) {
+            console.warn('create(), arguments=' + Array.prototype.slice.call(arguments).join(', '));
 
-        if( buttonValue == 'Album') {
-          var win = function(imageURI) {
-            console.log('Camera: ' + imageURI);
-            var m = new MediaFile();
-            m.name = imageURI.substring(imageURI.lastIndexOf('/')+1);;
-            m.fullPath = imageURI;
-            mThis.uploadCordovaFile(m);
+          if( buttonValue == 'Album') {
+            var win = function(imageURI) {
+              console.log('Camera: ' + imageURI);
+              var m = new MediaFile();
+              m.name = imageURI.substring(imageURI.lastIndexOf('/')+1);;
+              m.fullPath = imageURI;
+              mThis.uploadCordovaFile(m);
+            }
+
+            var fail = function(message) {
+                alert('Failed because: ' + message);
+              app_view.overlay.hide('loading');
+            }
+
+            navigator.camera.getPicture(win, fail, {
+              quality: 75,
+              destinationType: Camera.DestinationType.FILE_URI,
+              sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+            });
+            app_view.overlay.show('loading');
+          } else {
+            mThis.mediaDisptach( buttonValue );
           }
+        }, {cancelButtonIndex: 4});
+      } else {
+        return false;
+      }
+    },
 
-          var fail = function(message) {
-              alert('Failed because: ' + message);
-            app_view.overlay.hide('loading');
-          }
-
-          navigator.camera.getPicture(win, fail, {
-            quality: 75,
-            destinationType: Camera.DestinationType.FILE_URI,
-            sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-          });
-          app_view.overlay.show('loading');
-        } else {
-          mThis.mediaDisptach( buttonValue );
+    uplaoadFile: function(event) {
+      var mThis = this;
+      var file = event.currentTarget.files[0];
+      if (file) {
+        var ext = file.name.split('.').pop();
+        var filename = "";
+        switch(file.type) {
+          case 'audio/mpeg':
+          case 'audio/mp3':
+          case 'audio/ogg':
+          case 'audio/x-wav':
+          case 'audio/x-ms-wma':
+          case 'audio/vnd.rn-realaudio':
+            filename = "A-" + guid();
+            break;
+          case 'video/mpeg':
+          case 'video/mp4':
+          case 'video/quicktime':
+          case 'video/x-ms-wmv':
+          case 'video/x-msvideo':
+          case 'video/x-flv':
+          case 'video/webm':
+            filename = "M-" + guid();
+            break;
+          case 'image/gif':
+          case 'image/jpeg':
+          case 'image/png':
+          case 'image/tiff':
+            filename = "P-" + guid();
+            break;
         }
-      }, {cancelButtonIndex: 4});
+
+        var params = {
+          Bucket: bucketName,
+          Key: filename + "." + ext,
+          ContentType: file.type,
+          Body: file
+        };
+
+        app_view.overlay.show('loading');
+        s3.upload(params, function (err, data) {
+          if (!err) {
+            mThis.setMediaUrl( filename );
+          } else {
+            console.log(err);
+            app_view.overlay.hide('loading');
+            app_view.overlay.show('error', 3000);
+          }
+        });
+      }
     },
 
     mediaDisptach: function(type) {
@@ -181,12 +257,12 @@ define([
     },
 
     setMediaUrl: function(  url ) {
-      var reg = new RegExp("^(MC-[a-zA-Z]+-[PVA])$","g");
+      var reg = new RegExp("^[PMA]-([0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12})$","g");
       if( reg.test( url ) )
       {
-        var videoReg = new RegExp("^(MC-[a-zA-Z]+-V)$","g");
-        var pictureReg = new RegExp("^(MC-[a-zA-Z]+-P)$","g");
-        var audioReg = new RegExp("^(MC-[a-zA-Z]+-A)$","g");
+        var videoReg = new RegExp("^M-([0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12})$","g");
+        var pictureReg = new RegExp("^P-([0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12})$","g");
+        var audioReg = new RegExp("^A-([0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12})$","g");
 
         var type = null;
         switch( true )
@@ -205,12 +281,13 @@ define([
           switch( type )
           {
             case "Vo_Media_Video":
-              this.$el.find('.left img').attr('src', 'http://ms.dring93.org/m/preview/160x120/' + url + '.jpg');
+              this.$el.find('.left img').attr('src', Config.mediasCenter.url + '/' + url + '/video.jpg');
               break;
             case "Vo_Media_Picture":
-              this.$el.find('.left img').attr('src', 'http://ms.dring93.org/m/160x120/' + url + '.jpg');
+              this.$el.find('.left img').attr('src', Config.mediasCenter.url + '/' + url + '/image.jpg');
               break;
           }
+          app_view.overlay.show('valid', 3000);
         }
       }
       else

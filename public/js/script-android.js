@@ -12,7 +12,8 @@ require.config({
     'modernizr': { exports: 'Modernizr' },
     'backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone' },
     'chatanoo': { deps: ['underscore', 'jquery'], exports: 'Chatanoo' },
-    'elastic': { deps: ['jquery'] }
+    'elastic': { deps: ['jquery'] },
+    'aws': { exports: 'AWS' }
   },
   paths: {
     'text': '../components/requirejs-text/text',
@@ -28,6 +29,7 @@ require.config({
     'backbone': '../components/backbone/backbone',
     'chatanoo': 'libs/chatanoo-0.1.0',
     'gritter': '../components/jquery.gritter/js/jquery.gritter',
+    'aws': '../components/aws-sdk/dist/aws-sdk',
 
     'config': 'app/config-android'
   },

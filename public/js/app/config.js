@@ -12,7 +12,10 @@ define([
       }
     },
     mediasCenter: {
-      url: "http://ms.dring93.org/",
+      url: "http://medias.aws.chatanoo.org",
+      inputBucket: "chatanoo-medias-input",
+      identityPoolId: 'eu-west-1:b263aeab-02ae-4268-b338-95e7ea79e255',
+      region: 'eu-west-1',
       uploadURL: "http://ms.dring93.org/upload"
     },
     isCordova: false,

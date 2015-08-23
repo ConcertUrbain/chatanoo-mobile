@@ -29,6 +29,7 @@
     "requirejs-text": "~2.0.14",
     "requirejs-json": "~0.0.3",
     "requirejs-domready": "~2.0.1",
-    "requirejs-plugins": "~1.0.3"
+    "requirejs-plugins": "~1.0.3",
+    "aws-sdk": "~2.1.46"
   }
 }
