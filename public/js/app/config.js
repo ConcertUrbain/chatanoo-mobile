@@ -1,10 +1,10 @@
 define([
-  'json!https://s3-eu-west-1.amazonaws.com/chatanoo-cdn/config.json'
-], function(config) {
+  'json!env.json'
+], function(env) {
   return {
     chatanoo: {
-      url: '${WS_URL}',
-      sessions: config.api_key,
+      url: env.WS_URL,
+      sessions: env.API_KEYS,
 
       anonymous_user: {
         login: "anonymous",
@@ -12,11 +12,11 @@ define([
       }
     },
     mediasCenter: {
-      url: "http://medias.aws.chatanoo.org",
-      inputBucket: "chatanoo-medias-input",
-      identityPoolId: 'eu-west-1:b263aeab-02ae-4268-b338-95e7ea79e255',
-      region: 'eu-west-1',
-      uploadURL: "http://ms.dring93.org/upload"
+      url: env.MEDIAS_CENTER.url,
+      inputBucket: env.MEDIAS_CENTER.input_bucket,
+      identityPoolId: env.MEDIAS_CENTER.identity_pool,
+      region: env.MEDIAS_CENTER.region,
+      uploadURL: env.MEDIAS_CENTER.upload_url
     },
     isCordova: false,
     platform: "web"

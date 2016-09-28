@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+  - '4.2'
+
+env:
+  global:
+  - secure: beBrKgj2XV0d2tFrt3ZQjuNiYrle0gAI3ey91oeQ3ynx+8ahnOC1BK/wtr7ModLugpWavxIV8gmTQRtgf+n2gk743vI3P91Jq/J+G3775tijLulIEYNJDMwTYa9sC5Nb3MZ5wpP7plsU83AP+qSUt+yVvfhpcZqWQhVOiljlKtw=
+  - secure: J4TigOoKEf6wrp91tSpmoFEWATIMk47hZaL29n600EI4M5Qvgj/7KQUiYW+cqIMsgAoie3wBIxDIfGKZNnfrPtV8tv5w97/s3pKmvS2q+zTNS3fM77HypC0iG5RQgTNuo3ijuQkScabuqwl47AhqCJNqlaQFZDIG39Ai2QF6694=
+  - secure: I32tdlAAsQcLogq5+H0gfFxl8KkMlCk/PYYO3LyTCqHafBkAQFc1JDM9ib+WWKAcqutR0kUECD0D+iN56GwziM1QANk+hTTAR6DpJlR7PTIBTngCD1BOfaa5LXtvRC7NMBb8ULboEo5OpKSNecoDxxxRUj3v862P1foH1iMA+zc=
+
+before_script:
+  - npm install -g bower
+  - bower install
+
+script:
+  - echo 'No test'
+
+before_deploy:
+  - sudo pip install awscli
+
+deploy:
+  provider: script
+  script: scripts/deploy.sh
+  skip_cleanup: true
+  on:
+    tags: true

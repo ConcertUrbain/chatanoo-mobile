@@ -21,7 +21,7 @@ require.config({
     'dom-ready': '../components/requirejs-domready/domReady',
 
     'underscore': '../components/underscore/underscore',
-    'jquery': '../components/jquery/jquery',
+    'jquery': '../components/jquery/dist/jquery',
     'cookie': '../components/jquery.cookie/jquery.cookie',
     'moment': '../components/moment/moment',
     'elastic': 'libs/jquery.elastic-1.6.11',
@@ -47,7 +47,3 @@ require([
   console.log("App loaded");
     App.initialize();
 });
-
-
-
-

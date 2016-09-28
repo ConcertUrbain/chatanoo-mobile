@@ -48,3 +48,7 @@ build/config/buildinfo.properties
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+public/js/env.json
+
+build

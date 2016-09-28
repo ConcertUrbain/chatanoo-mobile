@@ -31,5 +31,8 @@
     "requirejs-domready": "~2.0.1",
     "requirejs-plugins": "~1.0.3",
     "aws-sdk": "~2.1.46"
+  },
+  "resolutions": {
+    "jquery": ">=1.8.2"
   }
 }

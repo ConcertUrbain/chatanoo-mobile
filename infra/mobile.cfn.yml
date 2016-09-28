@@ -1,0 +1,227 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Chatanoo Mobile Interface
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: General Configuration
+        Parameters: ["ProjectName", "CreateDNSRecord", "DeploymentZipUrl"]
+      - Label:
+          default: DNS Configuration
+        Parameters: ["DomainName", "SubDomainName", "Route53HostedZone"]
+      - Label:
+          default: Advanced Configuration
+        Parameters: ["WSURL", "MediaCenterUrl", "MediaCenterInputBucket", "MediaCenterIdentityPool"]
+      - Label:
+          default: Custom Resources Configuration
+        Parameters: ["S3UploaderLambda", "CloudFrontIdentityLambda", "CloudFrontCertificateLambda"]
+
+Parameters:
+  ProjectName:
+    Type: String
+  CreateDNSRecord:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "false"
+  DeploymentZipUrl:
+    Description: Url of Chatanoo Mobile Interface deployment zip
+    Type: String
+    Default: https://s3-eu-west-1.amazonaws.com/chatanoo-cdn/deployments/chatanoo-mobile.zip
+
+  DomainName:
+    Description: Domain Name of the website
+    Type: String
+  SubDomainName:
+    Description: Subdomain Name of the website
+    Type: String
+  Route53HostedZone:
+    Description: AWS Route53 HostedZone ID of the domain
+    Type: AWS::Route53::HostedZone::Id
+
+  WSURL:
+    Description: Url of Chatanoo Core
+    Type: String
+    Default: https://core.aws.chatanoo.org
+  MediaCenterUrl:
+    Description: Url of Chatanoo Medias Center
+    Type: String
+    Default: https://medias.aws.chatanoo.org
+  MediaCenterInputBucket:
+    Description: Input Bucket Name of the Medias Center
+    Type: String
+    Default: chatanoo-medias-input
+  MediaCenterIdentityPool:
+    Description: Cognito IdentityPool of the Medias Center
+    Type: String
+    Default: eu-west-1:b263aeab-02ae-4268-b338-95e7ea79e255
+
+  S3UploaderLambda:
+    Description: Lambda for the S3 Uploader Custom Resource
+    Type: String
+    Default: aws-cloudformation-s3-uploader-1-0-0"
+  CloudFrontIdentityLambda:
+    Description: Lambda for the CloudFront Identity Custom Resource
+    Type: String
+    Default: aws-cloudformation-cloudfront-identity-1-0-0"
+  CloudFrontCertificateLambda:
+    Description: Lambda for the CloudFront Certificate Custom Resource
+    Type: String
+    Default: aws-cloudformation-cloudfront-certificate-1-0-0"
+
+# Mappings
+
+Conditions:
+  UseDNSRecord: !Equals [!Ref CreateDNSRecord, "true"]
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      AccessControl: Private
+      WebsiteConfiguration:
+        ErrorDocument: error.html
+        IndexDocument: index.html
+      Tags:
+        - Key: chatanoo:project
+          Value: !Ref ProjectName
+        - Key: chatanoo:component
+          Value: mobile
+
+  StaticWebsite:
+    Type: Custom::S3Uploader
+    Version: 1.0
+    Properties:
+      ServiceToken: !Join [":", ["arn:aws:lambda", !Ref 'AWS::Region', !Ref 'AWS::AccountId', "function", !Ref S3UploaderLambda]]
+      Source:
+        Url: !Ref DeploymentZipUrl
+        Unzip: true
+      Destination:
+        Bucket: !Ref S3Bucket
+        Key: ''
+
+  StaticWebsiteEnvironement:
+    Type: Custom::S3Uploader
+    Version: 1.0
+    Properties:
+      ServiceToken: !Join [":", [ "arn:aws:lambda", !Ref 'AWS::Region', !Ref 'AWS::AccountId', "function", !Ref S3UploaderLambda] ]
+      Source:
+        Json:
+          WS_URL: !Ref WSURL
+          API_KEYS:
+            - name: MJC
+              key: 3WUWr77hbTf6gaH48fnUj9yhp442vbeH
+              session: 1
+            - name: Migrations
+              key: XhdThqbTJxXdHkTAKTtsjPUUgB3w4zEg
+              session: 2
+            - name: Cirasti
+              key: aYajpwve9tsusEHcsBgKTCW2XuDVuaDf
+              session: 3
+            - name: Problem Solving
+              key: ExHuJnpQkE4iRc6vMfYEqFbkkBLzjxUe
+              session: 4
+          MEDIAS_CENTER:
+            url: !Ref MediaCenterUrl
+            input_bucket: !Ref MediaCenterInputBucket
+            identity_pool: !Ref MediaCenterIdentityPool
+            region: !Ref 'AWS::Region'
+            upload_url: http://ms.dring93.org/upload?v=1
+      Destination:
+        Bucket: !Ref S3Bucket
+        Key: js/env.json
+    DependsOn: StaticWebsite
+
+  CDNIdentity:
+    Type: Custom::CloudFrontIdentity
+    Version: 1.0
+    Properties:
+      ServiceToken: !Join [":",[ "arn:aws:lambda", !Ref 'AWS::Region', !Ref 'AWS::AccountId', "function", !Ref CloudFrontIdentityLambda ] ]
+      Comment: !Join ["-",[ "access-identity", !Ref S3Bucket ] ]
+
+  CDNCertificate:
+    Type: Custom::CloudFrontCertificate
+    Version: 1.0
+    Properties:
+      ServiceToken: !Join [":",[ "arn:aws:lambda", !Ref 'AWS::Region', !Ref 'AWS::AccountId', "function", !Ref CloudFrontCertificateLambda ] ]
+      DomainName: !Join [".",[ !Ref SubDomainName, !Ref DomainName ] ]
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          ValidationDomain:"Fn::Join" : [".",[ !Ref SubDomainName, !Ref DomainName ] ]
+      Tags:
+        - Key: chatanoo:project
+          Value: !Ref ProjectName
+        - Key: chatanoo:component
+          Value: mobile
+    Condition: UseDNSRecord
+
+  CDNDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: StaticWebsiteEnvironement
+    Properties:
+      DistributionConfig:
+        Comment: Chatanoo Mobile Interface Distribution
+        Origins:
+          - DomainName: !GetAtt S3Bucket.DomainName
+            Id: !Join ["-", ["s3Origin", !Ref S3Bucket]]
+            S3OriginConfig:
+              OriginAccessIdentity: !Join ["",[ "origin-access-identity/cloudfront/", !Ref CDNIdentity ] ]
+        Enabled: "true"
+        Aliases:
+          - !If
+            - UseDNSRecord
+            - !Join ['.', [!Ref SubDomainName, !Ref DomainName]]
+            - !Ref 'AWS::NoValue'
+        PriceClass: PriceClass_All
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          AllowedMethods: [ "GET", "HEAD" ]
+          TargetOriginId: !Join ["-", ["s3Origin", !Ref S3Bucket]]
+          ForwardedValues:
+            QueryString: "false"
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+        ViewerCertificate: !If
+          - UseDNSRecord
+          - SSLSupportMethod: sni-only
+            ACMCertificateArn: !Ref CDNCertificate
+            MinimumProtocolVersion: TLSv1
+            Certificate: !Ref CDNCertificate
+            CertificateSource: acm
+          - !Ref 'AWS::NoValue'
+
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: CDNDistribution
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: 2008-10-17
+        Statement:
+          - Sid: 2
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt CDNIdentity.S3CanonicalUserId
+            Action: s3:GetObject
+            Resource: !Join ["",[ "arn:aws:s3:::", !Ref S3Bucket, "/*" ] ]
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Comment: Public DNS Record for Chatanoo Mobile Interface
+      HostedZoneId: !If ["UseDNSRecord", !Ref Route53HostedZone, !Ref 'AWS::NoValue']
+      Name: !Join ["", [!Ref SubDomainName, ".", !Ref DomainName, "."]]
+      Type: CNAME
+      TTL: 300
+      ResourceRecords:
+        - !GetAtt CDNDistribution.DomainName
+    Condition: UseDNSRecord
+
+Outputs:
+  CloudFrontUrl:
+    Value: !GetAtt CDNDistribution.DomainName
+  Url:
+    Value: !Join ['', ['https://', !Ref SubDomainName, !Ref DomainName]]
+    Condition: UseDNSRecord
