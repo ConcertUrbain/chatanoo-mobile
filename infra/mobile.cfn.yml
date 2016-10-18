@@ -6,13 +6,13 @@ Metadata:
     ParameterGroups:
       - Label:
           default: General Configuration
-        Parameters: ["ProjectName", "CreateDNSRecord", "DeploymentZipUrl"]
+        Parameters: ["ProjectName", "UseSecureConnection", "DeploymentBucket", "DeploymentZipKey"]
       - Label:
           default: DNS Configuration
-        Parameters: ["DomainName", "SubDomainName", "Route53HostedZone"]
+        Parameters: ["SubDomainName", "Route53HostedZone"]
       - Label:
           default: Advanced Configuration
-        Parameters: ["WSURL", "MediaCenterUrl", "MediaCenterInputBucket", "MediaCenterIdentityPool"]
+        Parameters: ["WSURL", "ApiKeysUrl", "MediaCenterUrl", "MediaCenterInputBucket", "MediaCenterIdentityPool"]
       - Label:
           default: Custom Resources Configuration
         Parameters: ["S3UploaderLambda", "CloudFrontIdentityLambda", "CloudFrontCertificateLambda"]
@@ -20,29 +20,34 @@ Metadata:
 Parameters:
   ProjectName:
     Type: String
-  CreateDNSRecord:
+  UseSecureConnection:
+    Description: Use HTTPS to connect this website
     Type: String
     AllowedValues: ["true", "false"]
     Default: "false"
-  DeploymentZipUrl:
+  DeploymentBucket:
     Description: Url of Chatanoo Mobile Interface deployment zip
     Type: String
-    Default: https://s3-eu-west-1.amazonaws.com/chatanoo-cdn/deployments/chatanoo-mobile.zip
-
-  DomainName:
-    Description: Domain Name of the website
+    Default: chatanoo-deployment
+  DeploymentZipKey:
+    Description: Url of Chatanoo Mobile Interface deployment zip
     Type: String
+    Default: mobile/1.0.0.zip
+
   SubDomainName:
     Description: Subdomain Name of the website
     Type: String
   Route53HostedZone:
     Description: AWS Route53 HostedZone ID of the domain
-    Type: AWS::Route53::HostedZone::Id
+    Type: String
 
   WSURL:
     Description: Url of Chatanoo Core
     Type: String
     Default: https://core.aws.chatanoo.org
+  ApiKeysUrl:
+    Description: Url of a JSON file that contains all api_keys
+    Type: String
   MediaCenterUrl:
     Description: Url of Chatanoo Medias Center
     Type: String
@@ -68,16 +73,33 @@ Parameters:
     Description: Lambda for the CloudFront Certificate Custom Resource
     Type: String
     Default: aws-cloudformation-cloudfront-certificate-1-0-0"
+  Route53HostedZoneDetailsLambda:
+    Description: Lambda for the Route53 HostedZone Details Custom Resource
+    Type: String
+    Default: aws-cloudformation-route53-hostedzone-details-1-0-0
 
 # Mappings
 
 Conditions:
-  UseDNSRecord: !Equals [!Ref CreateDNSRecord, "true"]
+  UseDNSRecord: !Not [!Equals [!Ref Route53HostedZone, ""]]
+  UseHTTPS: !Equals [!Ref UseSecureConnection, "true"]
+  UseDNSAndHTTPS: !And
+    - !Condition UseDNSRecord
+    - !Condition UseHTTPS
 
 Resources:
+
+  DomainName:
+    Type: Custom::Route53HostedZoneDetails
+    Version: '1.0'
+    Condition: UseDNSRecord
+    Properties:
+      ServiceToken: !Join [':', ['arn:aws:lambda', !Ref 'AWS::Region', !Ref 'AWS::AccountId', function, !Ref Route53HostedZoneDetailsLambda]]
+      Id: !Ref Route53HostedZone
+
   S3Bucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
+    DeletionPolicy: Retain
     Properties:
       AccessControl: Private
       WebsiteConfiguration:
@@ -95,7 +117,7 @@ Resources:
     Properties:
       ServiceToken: !Join [":", ["arn:aws:lambda", !Ref 'AWS::Region', !Ref 'AWS::AccountId', "function", !Ref S3UploaderLambda]]
       Source:
-        Url: !Ref DeploymentZipUrl
+        Url: !Join ['', ['https://s3.amazonaws.com/', !Ref DeploymentBucket, '/', !Ref DeploymentZipKey]]
         Unzip: true
       Destination:
         Bucket: !Ref S3Bucket
@@ -109,25 +131,12 @@ Resources:
       Source:
         Json:
           WS_URL: !Ref WSURL
-          API_KEYS:
-            - name: MJC
-              key: 3WUWr77hbTf6gaH48fnUj9yhp442vbeH
-              session: 1
-            - name: Migrations
-              key: XhdThqbTJxXdHkTAKTtsjPUUgB3w4zEg
-              session: 2
-            - name: Cirasti
-              key: aYajpwve9tsusEHcsBgKTCW2XuDVuaDf
-              session: 3
-            - name: Problem Solving
-              key: ExHuJnpQkE4iRc6vMfYEqFbkkBLzjxUe
-              session: 4
+          API_KEYS: !Ref ApiKeysUrl
           MEDIAS_CENTER:
             url: !Ref MediaCenterUrl
             input_bucket: !Ref MediaCenterInputBucket
             identity_pool: !Ref MediaCenterIdentityPool
             region: !Ref 'AWS::Region'
-            upload_url: http://ms.dring93.org/upload?v=1
       Destination:
         Bucket: !Ref S3Bucket
         Key: js/env.json
@@ -154,7 +163,7 @@ Resources:
           Value: !Ref ProjectName
         - Key: chatanoo:component
           Value: mobile
-    Condition: UseDNSRecord
+    Condition: UseDNSAndHTTPS
 
   CDNDistribution:
     Type: AWS::CloudFront::Distribution
@@ -184,7 +193,7 @@ Resources:
               Forward: none
           ViewerProtocolPolicy: allow-all
         ViewerCertificate: !If
-          - UseDNSRecord
+          - UseDNSAndHTTPS
           - SSLSupportMethod: sni-only
             ACMCertificateArn: !Ref CDNCertificate
             MinimumProtocolVersion: TLSv1
@@ -220,8 +229,8 @@ Resources:
     Condition: UseDNSRecord
 
 Outputs:
-  CloudFrontUrl:
-    Value: !GetAtt CDNDistribution.DomainName
   Url:
-    Value: !Join ['', ['https://', !Ref SubDomainName, !Ref DomainName]]
-    Condition: UseDNSRecord
+    Value: !If
+      - UseDNSRecord
+      - !Join ['', [!If [UseHTTPS, 'https://', 'http://'], !Ref SubDomainName, '.', !Ref DomainName]]
+      - !Join ['', [!If [UseHTTPS, 'https://', 'http://'], !GetAtt CDNDistribution.DomainName]]

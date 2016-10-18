@@ -21,7 +21,7 @@
     "moment": "1.5.0",
     "modernizr": "2.0.6",
     "less": "1.1.4-lastest",
-    "jquery": "1.7.2",
+    "jquery": "2.1.4",
     "backbone": "0.9.2",
     "requirejs": "2.1.17",
     "jquery.gritter": "1.7.4",
@@ -31,8 +31,5 @@
     "requirejs-domready": "~2.0.1",
     "requirejs-plugins": "~1.0.3",
     "aws-sdk": "~2.1.46"
-  },
-  "resolutions": {
-    "jquery": ">=1.8.2"
   }
 }

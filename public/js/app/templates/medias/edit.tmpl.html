@@ -7,11 +7,7 @@
     <img src="img/preview-audio.jpg" alt="" />
   <% } %>
 
-  <% if( config.isCordova ) { %>
-      <input name="file" id="file" type="file" value="Choisir..." />
-  <% } else { %>
-    <iframe id="upload-frame" width="100%" height="80px" src="upload/upload-iframe.html" frameborder="0"></iframe>
-  <% } %>
+  <input name="file" id="file" type="file" value="Choisir..." />
 
   <input type="hidden" name="url" value="<%- media.get( 'url' ) %>" />
 </div>

@@ -1,7 +1,15 @@
 define([
+  'jquery',
   'json!env.json'
-], function(env) {
+], function($, env) {
   return {
+    load: function(callback) {
+      var _this = this;
+      $.getJSON(env.API_KEYS, function(data) {
+        _this.chatanoo.sessions = data.api_key;
+        callback(null);
+      })
+    },
     chatanoo: {
       url: env.WS_URL,
       sessions: env.API_KEYS,

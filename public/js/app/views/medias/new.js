@@ -77,9 +77,9 @@ define([
 
       if( (this.editing || _.isUndefined( this.model.get('id') )) && !Config.isCordova ) {
         var mThis = this;
-        this.$el.find("#upload-frame").load( function( event ) {
-          mThis.uploadFile.apply(mThis, [event]);
-        });
+        // this.$el.find("#upload-frame").load( function( event ) {
+        //   // mThis.uploadFile.apply(mThis, [event]);
+        // });)
       }
 
       return this;
@@ -156,7 +156,7 @@ define([
 
         var params = {
           Bucket: bucketName,
-          Key: filename + "." + ext,
+          Key: 'upload/' + filename + "." + ext,
           ContentType: file.type,
           Body: file
         };

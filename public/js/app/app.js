@@ -9,11 +9,14 @@ define([
 
   'moment'
 ], function($, _, Backbone, Chatanoo, Router, Config) {
-  var initialize = function() {
-  Chatanoo.init(Config.chatanoo.url, Config.chatanoo.api_key);
+    var initialize = function() {
+    Chatanoo.init(Config.chatanoo.url, Config.chatanoo.api_key);
 
-  window.isLogged = false;
-    Router.initialize();
+    window.isLogged = false;
+
+    Config.load( function() {
+      Router.initialize();
+    })
   }
 
   return {
